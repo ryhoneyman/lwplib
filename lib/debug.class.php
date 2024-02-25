@@ -51,6 +51,7 @@ class Debug extends Base
    protected $type    = null;
    protected $buffer  = false;
    public    $log     = array();
+   private   $lastMs  = null;
 
    //===================================================================================================
    // Description: Creates the class object
@@ -65,6 +66,8 @@ class Debug extends Base
       $this->level($level);
 
       if (isset($options['buffer'])) { $this->buffer($options['buffer']); } 
+
+      $lastMs = microtime(true);
    }
 
    //===================================================================================================
@@ -165,6 +168,20 @@ class Debug extends Base
       return @file_put_contents($fileName,sprintf("[%s] %s\n",date('Y-m-d H:i:s'),$mesg),$flags);
    }
 
+   public function traceDuration($mesg)
+   {
+      if ($this->level < 9) { return false; }
+
+      $nowMs = microtime(true);
+
+      if (!$this->lastMs) { $this->lastMs = $nowMs; }
+
+      $this->trace(9,sprintf("%s: %1.6f secs",$mesg,($nowMs - $lastMs)));
+
+      $this->lastMs = $nowMs;
+
+      return true;
+   }
 }
 
 ?>
