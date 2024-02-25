@@ -261,7 +261,7 @@ class MainBase extends Base
       return false;
    }
 
-   public function connectDatabase($dbConfigFile = null, $name = null, $className = 'MySQL', $fileName = 'mysql.class.php')
+   public function setupDatabase($dbConfigFile = null, $name = null, $className = 'MySQL', $fileName = 'mysql.class.php')
    {
       $this->debug(8,"called");
 
@@ -280,11 +280,16 @@ class MainBase extends Base
 
       if (!$buildResult) { return false; }
 
-      define('DB_SERVER',$dbConnect['hostname']);
-      define('DB_USER',$dbConnect['username']);
-      define('DB_PASS',$dbConnect['password']);
+      $this->db($name)->setupConnect($dbConnect['hostname'],$dbConnect['username'],$dbConnecy['password'],$dbConnect['database']);
+   }
 
-      $connectResult = $this->db($name)->connect($dbConnect['hostname'],$dbConnect['username'],$dbConnect['password'],$dbConnect['database']);
+   public function connectDatabase($name = null)
+   {
+      if (is_null($name)) { $name = $this->settings['defaults']['db.name']; }
+
+      if (!$this->db($name)) { return false; }
+
+      $connectResult = $this->db($name)->startConnect();
 
       $this->debug(9,"connectResult:$connectResult for class:$className name:$name");
 

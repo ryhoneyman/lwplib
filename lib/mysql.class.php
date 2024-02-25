@@ -16,36 +16,27 @@ class MySQL extends Base
     private $hostname;
     private $username;
     private $password;
-    private $dbname;
+    private $database;
 
     public function __construct($debug = null)
     {
         parent::__construct($debug);
     }
 
-    public function connect($hostname, $username, $password, $dbname, $persistent = false)
+    public function connect($hostname, $username, $password, $database, $persistent = false)
     {
-        $this->debug(1,"connecting to $hostname($dbname), user:$username, persistent:$persistent");
+        $this->debug(1,"connecting to $hostname($database), user:$username, persistent:$persistent");
 
-        $this->connectValues($hostname,$username,$password,$dbname);
+        $this->setupConnect($hostname,$username,$password,$database);
 
-        if (!$this->resource = @mysqli_connect($this->hostname, $this->username, $this->password, $this->dbname)) {
-           $this->debug(1,"unable to establish connection to database");
-           return false;
-        }
-
-        $this->connected = true;
-
-        $this->debug(1,"connected to database ($dbname)");
-
-        return true;
+        return $this->startConnect();
     }
 
     public function reconnect($issueDisconnect = true)
     {
         if ($issueDisconnect) { $this->disconnect(); }
 
-        return $this->connect($this->host, $this->username, $this->password, $this->dbname);
+        return $this->connect($this->hostname, $this->username, $this->password, $this->database);
     }
 
     public function disconnect()
@@ -55,12 +46,26 @@ class MySQL extends Base
         return mysqli_close($this->resource);
     }
 
-    public function connectValues($hostname = null, $username = null, $password = null, $dbname = null)
+    public function startConnect()
+    {
+       if (!$this->resource = @mysqli_connect($this->hostname, $this->username, $this->password, $this->database)) {
+           $this->debug(1,"unable to establish connection to database");
+           return false;
+        }
+
+        $this->connected = true;
+
+        $this->debug(1,"connected to database ($database)");
+
+        return true;
+    }
+
+    public function setupConnect($hostname = null, $username = null, $password = null, $database = null)
     {
        if (!is_null($hostname)) { $this->hostname = $hostname; } 
        if (!is_null($username)) { $this->username = $username; } 
        if (!is_null($password)) { $this->password = $password; } 
-       if (!is_null($dbname))   { $this->dbname   = $dbname; } 
+       if (!is_null($database)) { $this->database = $database; } 
 
        return true;
     }
