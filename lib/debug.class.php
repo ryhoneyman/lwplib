@@ -67,7 +67,7 @@ class Debug extends Base
 
       if (isset($options['buffer'])) { $this->buffer($options['buffer']); } 
 
-      $lastMs = microtime(true);
+      $this->lastMs = microtime(true);
    }
 
    //===================================================================================================

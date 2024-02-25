@@ -47,7 +47,10 @@ class MainBase extends Base
       $this->hostname = php_uname('n');
       $this->now      = time();
 
+      // Setup debugging options before debugging occurrs.
       if ($this->cliApp) { $this->debugType(DEBUG_CLI); }
+      if (isset($options['debugLevel'])) { $this->debugLevel($options['debugLevel']); }
+      if (isset($options['debugBufer'])) { $this->debugBuffer($options['debugBuffer']); }
 
       $this->settings['defaults'] = array(
          'db.name' => 'default',
@@ -180,7 +183,6 @@ class MainBase extends Base
 
    public function initialize($options)
    {
-      if ($options['debugLevel']) { $this->debugLevel($options['debugLevel']); }
 
       $this->debug(8,"called");
 
@@ -352,6 +354,11 @@ class MainBase extends Base
    public function debugType($type)
    {
       return $this->debug->type($type);
+   }
+
+   public function debugBuffer($state)
+   {
+      return $this->debug->buffer($state);
    }
 
    public function db($name = null)
