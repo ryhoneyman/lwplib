@@ -13,7 +13,7 @@ class MySQL extends Base
     public $lastError    = null;
 
     private $resource;
-    private $host;
+    private $hostname;
     private $username;
     private $password;
     private $dbname;
@@ -23,29 +23,27 @@ class MySQL extends Base
         parent::__construct($debug);
     }
 
-    public function connect($host, $username, $password, $dbname, $persistent = false)
+    public function connect($hostname, $username, $password, $dbname, $persistent = false)
     {
-        $this->debug(1,"connecting to $host($dbname), user:$username, persistent:$persistent");
+        $this->debug(1,"connecting to $hostname($dbname), user:$username, persistent:$persistent");
 
-        if (!$this->resource = @mysqli_connect($host, $username, $password, $dbname)) {
+        $this->connectValues($hostname,$username,$password,$dbname);
+
+        if (!$this->resource = @mysqli_connect($this->hostname, $this->username, $this->password, $this->dbname)) {
            $this->debug(1,"unable to establish connection to database");
            return false;
         }
 
         $this->connected = true;
-        $this->host      = $host;
-        $this->username  = $username;
-        $this->password  = $password;
-        $this->dbname    = $dbname;
 
         $this->debug(1,"connected to database ($dbname)");
 
         return true;
     }
 
-    public function reconnect()
+    public function reconnect($issueDisconnect = true)
     {
-        $this->disconnect();
+        if ($issueDisconnect) { $this->disconnect(); }
 
         return $this->connect($this->host, $this->username, $this->password, $this->dbname);
     }
@@ -55,6 +53,16 @@ class MySQL extends Base
         $this->connected = false;
 
         return mysqli_close($this->resource);
+    }
+
+    public function connectValues($hostname = null, $username = null, $password = null, $dbname = null)
+    {
+       if (!is_null($hostname)) { $this->hostname = $hostname; } 
+       if (!is_null($username)) { $this->username = $username; } 
+       if (!is_null($password)) { $this->password = $password; } 
+       if (!is_null($dbname))   { $this->dbname   = $dbname; } 
+
+       return true;
     }
 
     public function isConnected()
