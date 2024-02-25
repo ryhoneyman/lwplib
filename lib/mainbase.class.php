@@ -261,14 +261,17 @@ class MainBase extends Base
       return false;
    }
 
-   public function setupDatabase($dbConfigFile = null, $name = null, $className = 'MySQL', $fileName = 'mysql.class.php')
+   public function setupDatabase($dbConfigFile = null, $name = null, $className = null, $fileName = null)
    {
       $this->debug(8,"called");
+
+      if (is_null($name))      { $name      = $this->settings['defaults']['db.name']; }
+      if (is_null($className)) { $className = 'MySQL'; }
+      if (is_null($fileName))  { $fileName  = 'mysql.class.php'; }
 
       if (is_a($this->db($name),$className) && $this->db($name)->isConnected()) { return true; }
 
       if (is_null($dbConfigFile)) { $dbConfigFile = APP_CONFIGDIR.'/db.conf'; }
-      if (is_null($name)) { $name = $this->settings['defaults']['db.name']; }
 
       $dbConnect = json_decode(base64_decode(file_get_contents($dbConfigFile)),true);
 
@@ -280,16 +283,29 @@ class MainBase extends Base
 
       if (!$buildResult) { return false; }
 
-      $this->db($name)->setupConnect($dbConnect['hostname'],$dbConnect['username'],$dbConnecy['password'],$dbConnect['database']);
+      $this->db($name)->setupConnect($dbConnect['hostname'],$dbConnect['username'],$dbConnect['password'],$dbConnect['database']);
+
+      return true;
    }
 
-   public function connectDatabase($name = null)
+   public function attachDatabase($name = null)
    {
       if (is_null($name)) { $name = $this->settings['defaults']['db.name']; }
 
       if (!$this->db($name)) { return false; }
 
       $connectResult = $this->db($name)->startConnect();
+
+      $this->debug(9,"connectResult:$connectResult for class:$className name:$name");
+
+      return $connectResult;
+   }
+
+   public function connectDatabase($dbConfigFile = null, $name = null, $className = null, $fileName = null)
+   {
+      if (!$this->setupDatabase($dbConfigFile,$name,$className,$fileName)) { return false; }
+
+      $connectResult = $this->attachDatabase($name);
 
       $this->debug(9,"connectResult:$connectResult for class:$className name:$name");
 
