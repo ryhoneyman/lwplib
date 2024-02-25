@@ -176,7 +176,7 @@ class Debug extends Base
 
       if (!$this->lastMs) { $this->lastMs = $nowMs; }
 
-      $this->trace(9,sprintf("%s: %1.6f secs",$mesg,($nowMs - $lastMs)));
+      $this->trace(9,sprintf("%s: %1.6f secs",$mesg,($nowMs - $this->lastMs)));
 
       $this->lastMs = $nowMs;
 
