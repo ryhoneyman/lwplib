@@ -55,7 +55,7 @@ class MySQL extends Base
 
         $this->connected = true;
 
-        $this->debug(1,"connected to database ($database)");
+        $this->debug(1,"connected to database ($this->database)");
 
         return true;
     }
