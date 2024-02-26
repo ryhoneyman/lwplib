@@ -284,7 +284,7 @@ class MainBase extends Base
 
       $buildResult = $this->buildClass("db.$name",$className,null,$fileName);
 
-      $this->debug(9,"buildResult:$buildResult for class:$className name:$name");
+      $this->debug(9,"buildResult:".json_encode($buildResult)." for class:$className name:$name");
 
       if (!$buildResult) { return false; }
 
@@ -301,11 +301,11 @@ class MainBase extends Base
 
       if (!$this->db($name)) { return false; }
 
-      $connectResult = $this->db($name)->attach();
+      $attachResult = $this->db($name)->attach();
 
-      $this->debug(9,"connectResult:$connectResult for class:$className name:$name");
+      $this->debug(9,"attachResult:".json_encode($attachResult)." for name:$name");
 
-      return $connectResult;
+      return $attachResult;
    }
 
    public function connectDatabase($dbConfigFile = null, $name = null, $className = null, $fileName = null)
@@ -314,9 +314,7 @@ class MainBase extends Base
 
       if (!$this->prepareDatabase($dbConfigFile,$name,$className,$fileName)) { return false; }
 
-      $connectResult = $this->attach($name);
-
-      $this->debug(9,"connectResult:$connectResult for class:$className name:$name");
+      $connectResult = $this->attachDatabase($name);
 
       return $connectResult;
    }
