@@ -27,9 +27,9 @@ class MySQL extends Base
     {
         $this->debug(1,"connecting to $hostname($database), user:$username, persistent:$persistent");
 
-        $this->setupConnect($hostname,$username,$password,$database);
+        $this->prepare($hostname,$username,$password,$database);
 
-        return $this->startConnect();
+        return $this->attach();
     }
 
     public function reconnect($issueDisconnect = true)
@@ -46,7 +46,7 @@ class MySQL extends Base
         return mysqli_close($this->resource);
     }
 
-    public function startConnect()
+    public function attach()
     {
        if (!$this->resource = @mysqli_connect($this->hostname, $this->username, $this->password, $this->database)) {
            $this->debug(1,"unable to establish connection to database");
@@ -60,7 +60,7 @@ class MySQL extends Base
         return true;
     }
 
-    public function setupConnect($hostname = null, $username = null, $password = null, $database = null)
+    public function prepare($hostname = null, $username = null, $password = null, $database = null)
     {
        if (!is_null($hostname)) { $this->hostname = $hostname; } 
        if (!is_null($username)) { $this->username = $username; } 

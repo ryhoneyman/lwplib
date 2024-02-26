@@ -25,7 +25,10 @@ class MainBase extends Base
       $this->cliApp = (php_sapi_name() == "cli") ? true : false;
       $this->webApp = !$this->cliApp;
 
-      if ($options['database']) { $this->settings['need.database'] = true; }
+      // Database control, whether we just prepare or keep a fully connection established when we're done initializing
+      // Leaving the database disconnected until, and if, required can save resources
+      if ($options['database'] === true || preg_match('/^connect$/i',$options['database'])) { $this->settings['connect.database'] = true; }
+      else if (preg_match('/^prepare$/i',$options['database'])) { $this->settings['prepare.database'] = true; }
 
       // Pre-web startup hooks
       if ($this->webApp) { $this->webhookStartup(); }
@@ -189,7 +192,9 @@ class MainBase extends Base
       // if define is not in array format, convert it to array
       if (!is_array($options['define'])) { $options['define'] = ($options['define']) ? array($options['define']) : array(); }
 
-      if ($options['database']) {
+      if ($this->settings['prepare.database']) { $this->prepareDatabase(); }
+
+      if ($this->settings['connect.database']) {
          if (!$this->connectDatabase()) { $this->debug(0,"Could not establish connection to database"); exit; }
       }
 
@@ -243,7 +248,7 @@ class MainBase extends Base
          if (!defined($info['name'])) { define($info['name'],$info['value']); }
       }
 
-      if (!$this->settings['need.database']) { $this->disconnectDatabase(); }
+      if (!$this->settings['connect.database']) { $this->disconnectDatabase(); }
 
       return true;
    }
@@ -261,7 +266,7 @@ class MainBase extends Base
       return false;
    }
 
-   public function setupDatabase($dbConfigFile = null, $name = null, $className = null, $fileName = null)
+   public function prepareDatabase($dbConfigFile = null, $name = null, $className = null, $fileName = null)
    {
       $this->debug(8,"called");
 
@@ -283,18 +288,20 @@ class MainBase extends Base
 
       if (!$buildResult) { return false; }
 
-      $this->db($name)->setupConnect($dbConnect['hostname'],$dbConnect['username'],$dbConnect['password'],$dbConnect['database']);
+      $this->db($name)->prepare($dbConnect['hostname'],$dbConnect['username'],$dbConnect['password'],$dbConnect['database']);
 
       return true;
    }
 
    public function attachDatabase($name = null)
    {
+      $this->debug(8,"called");
+
       if (is_null($name)) { $name = $this->settings['defaults']['db.name']; }
 
       if (!$this->db($name)) { return false; }
 
-      $connectResult = $this->db($name)->startConnect();
+      $connectResult = $this->db($name)->attach();
 
       $this->debug(9,"connectResult:$connectResult for class:$className name:$name");
 
@@ -303,9 +310,11 @@ class MainBase extends Base
 
    public function connectDatabase($dbConfigFile = null, $name = null, $className = null, $fileName = null)
    {
-      if (!$this->setupDatabase($dbConfigFile,$name,$className,$fileName)) { return false; }
+      $this->debug(8,"called");
 
-      $connectResult = $this->attachDatabase($name);
+      if (!$this->prepareDatabase($dbConfigFile,$name,$className,$fileName)) { return false; }
+
+      $connectResult = $this->attach($name);
 
       $this->debug(9,"connectResult:$connectResult for class:$className name:$name");
 
