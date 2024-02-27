@@ -168,11 +168,13 @@ class Debug extends Base
       return @file_put_contents($fileName,sprintf("[%s] %s\n",date('Y-m-d H:i:s'),$mesg),$flags);
    }
 
-   public function traceDuration($mesg)
+   public function traceDuration($mesg, $lastMs = null)
    {
       if ($this->level < 9) { return false; }
 
       $nowMs = microtime(true);
+
+      if (!is_null($lastMs)) { $this->lastMS = $lastMs; }
 
       if (!$this->lastMs) { $this->lastMs = $nowMs; }
 
