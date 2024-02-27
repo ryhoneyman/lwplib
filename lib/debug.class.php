@@ -174,7 +174,7 @@ class Debug extends Base
 
       $nowMs = microtime(true);
 
-      if (!is_null($lastMs)) { $this->lastMS = $lastMs; }
+      if (!is_null($lastMs)) { $this->lastMs = $lastMs; }
 
       if (!$this->lastMs) { $this->lastMs = $nowMs; }
 
