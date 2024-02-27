@@ -48,6 +48,8 @@ class MySQL extends Base
 
     public function attach()
     {
+       if ($this->connected) { return true; }
+
        if (!$this->resource = @mysqli_connect($this->hostname, $this->username, $this->password, $this->database)) {
            $this->debug(1,"unable to establish connection to database");
            return false;

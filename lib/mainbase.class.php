@@ -319,6 +319,17 @@ class MainBase extends Base
       return $connectResult;
    }
 
+   public function isDatabaseConnected($name = null)
+   {
+      $this->debug(8,"called");
+
+      if (is_null($name)) { $name = $this->settings['defaults']['db.name']; }
+
+      if (!$this->db($name)) { return false; }
+
+      return $this->db($name)->isConnected();
+   }
+
    public function buildClass($objName, $className, $options = null, $fileName = null)
    {
       if (!$this->classList[$className] && !$this->autoLoad && !is_null($fileName)) { $this->includeClass($className,$fileName); }
