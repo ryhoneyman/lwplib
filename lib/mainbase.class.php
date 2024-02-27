@@ -54,8 +54,8 @@ class MainBase extends Base
 
       // Setup debugging options before debugging occurrs.
       if ($this->cliApp) { $this->debugType(DEBUG_CLI); }
-      if (isset($options['debugLevel'])) { $this->debugLevel($options['debugLevel']); }
-      if (isset($options['debugBufer'])) { $this->debugBuffer($options['debugBuffer']); }
+      if (isset($options['debugLevel']))  { $this->debugLevel($options['debugLevel']); }
+      if (isset($options['debugBuffer'])) { $this->debugBuffer($options['debugBuffer']); }
 
       $this->settings['defaults'] = array(
          'db.name' => 'default',
