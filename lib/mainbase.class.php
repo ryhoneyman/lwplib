@@ -26,6 +26,11 @@ class MainBase extends Base
       $this->cliApp = (php_sapi_name() == "cli") ? true : false;
       $this->webApp = !$this->cliApp;
 
+      $this->pid      = getmypid();
+      $this->hostname = php_uname('n');
+      $this->now      = time();
+      $this->startMs  = microtime(true);
+
       // Database control, whether we just prepare or keep a fully connection established when we're done initializing
       // Leaving the database disconnected until, and if, required can save resources
       if ($options['database'] === true || preg_match('/^connect$/i',$options['database'])) { $this->settings['connect.database'] = true; }
@@ -46,11 +51,6 @@ class MainBase extends Base
       $this->debug = new Debug();
 
       $this->objects['debug'] = $this->debug;
-
-      $this->pid      = getmypid();
-      $this->hostname = php_uname('n');
-      $this->now      = time();
-      $this->startMs  = microtime(true);
 
       // Setup debugging options before debugging occurrs.
       if ($this->cliApp) { $this->debugType(DEBUG_CLI); }
