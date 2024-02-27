@@ -11,6 +11,7 @@ class MainBase extends Base
    public    $objects     = array();
    public    $classList   = array();
    public    $now         = null;
+   public    $startMs     = null;
    public    $pid         = null;
    public    $hostname    = null;
    public    $userName    = null;
@@ -49,6 +50,7 @@ class MainBase extends Base
       $this->pid      = getmypid();
       $this->hostname = php_uname('n');
       $this->now      = time();
+      $this->startMs  = microtime(true);
 
       // Setup debugging options before debugging occurrs.
       if ($this->cliApp) { $this->debugType(DEBUG_CLI); }
@@ -398,6 +400,11 @@ class MainBase extends Base
    public function debugBuffer($state)
    {
       return $this->debug->buffer($state);
+   }
+
+   public function elapsedRuntime()
+   {
+      return sprintf("%1.6f",microtime(true) - $this->startMs); 
    }
 
    public function db($name = null)
