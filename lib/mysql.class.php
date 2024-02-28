@@ -179,7 +179,7 @@ class MySQL extends Base
           return false;
        }
 
-       $this->debug(9,"connected, bindquery($statement) types($types)");
+       $this->debug(9,"connected, bindquery($statement) types($types) data(".json_encode($data).")");
 
        $stmt = mysqli_prepare($this->resource,$statement);
 
@@ -199,7 +199,7 @@ class MySQL extends Base
           return false; 
        }
 
-       $this->debug(9,"query($stmt) keyid($keyid) multi($multi) serial($serial) callback($callback)");
+       $this->debug(9,"query($statement) keyid($keyid) multi($multi) serial($serial) callback($callback)");
 
        $execResult = mysqli_stmt_execute($stmt);
 
@@ -212,7 +212,7 @@ class MySQL extends Base
        $result = mysqli_stmt_get_result($stmt);
 
        if (!$result) {
-           $this->debug(9,"no results, query($stmt)");
+           $this->debug(9,"no results, query($statement)");
            return $return;
        }
 
