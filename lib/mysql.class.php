@@ -162,6 +162,88 @@ class MySQL extends Base
     public function freeResult($result)
     {
         mysqli_free_result($result);
+        return true;
+    }
+
+    public function bindQuery($statement, $types, $data, $options = null)
+    {
+       $return = array();
+
+       $keyid    = isset($options['keyid'])     ? $options['keyid']     : false;
+       $multi    = isset($options['multi'])     ? $options['multi']     : true;
+       $serial   = isset($options['serialize']) ? $options['serialize'] : false;
+       $callback = isset($options['callback'])  ? $options['callback']  : false;
+
+       if (!$this->connected) {
+          $this->debug(1,"query requested, but database not connected");
+          return false;
+       }
+
+       $this->debug(9,"connected, bindquery($statement) types($types)");
+
+       $stmt = mysqli_prepare($this->resource,$statement);
+
+       if ($stmt === false) {
+          $this->debug(1,"malformed statement in prepare ($statement)");
+          return false;
+       }
+
+       $varRefs = array();
+       foreach (array_keys($data) as $fieldPosition) { $varRefs[$fieldPosition] = &$data[$fieldPosition]; }
+
+       $bindResult = call_user_func_array(array($stmt,'bind_param'),array_merge(array($types),$varRefs));
+
+       if ($bindResult === false) {
+          $this->lastErrno = 0;
+          $this->lastError = "Could not bind parameters";
+          return false; 
+       }
+
+       $this->debug(9,"query($stmt) keyid($keyid) multi($multi) serial($serial) callback($callback)");
+
+       $execResult = mysqli_stmt_execute($stmt);
+
+       if ($execResult === false) {
+          $this->lastErrno = mysqli_stmt_errno($stmt);
+          $this->lastError = mysqli_stmt_error($stmt);
+          return false;
+       }
+
+       $result = mysqli_stmt_get_result($stmt);
+
+       if (!$result) {
+           $this->debug(9,"no results, query($stmt)");
+           return $return;
+       }
+
+       if ($multi) {
+           while ($rec = $this->fetchAssoc($result)) {
+              if (!$keyid) {
+                 $keyid = array_shift(array_keys($rec));
+                 $this->debug(9,"no keyid set, keyid($keyid)");
+              }
+
+              $id = $rec[$keyid];
+
+              if (!$id) { continue; }
+
+              if (is_callable($callback)) {
+                 call_user_func_array($callback,array($id,$rec,&$return));
+                 continue;
+              }
+
+              $return[$id] = ($serial) ? serialize($rec) : $rec;
+          }
+       }
+       else {
+          $return = $this->fetchAssoc($result);
+       }
+
+       $this->freeResult($result);
+
+       if (is_array($return)) { $this->debug(7,"loaded ".count($return)." elements"); }
+
+       return $return;
     }
 
     public function query($param, $options = null)
