@@ -16,6 +16,9 @@ class ConstantsBase extends Base
 
       $this->list = json_decode(@file_get_contents($configFile),true);
 
+      if ($defines = $this->fetch('defines')) {
+         foreach ($defines as $defineKey => $defineValue) { define($defineKey,$defineValue); }
+      }
    }
 
    public function fetch($section) { return $this->list[$section]; }
