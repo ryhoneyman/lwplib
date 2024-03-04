@@ -4,13 +4,12 @@ include_once 'base.class.php';
 
 class MySQL extends Base
 {
-    protected $version = 1.3;
-
-    public $connected    = false;
-    public $totalQueries = 0;
-    public $totalRows    = 0;
-    public $lastErrno    = null;
-    public $lastError    = null;
+    protected $version      = 1.3;
+    public    $connected    = false;
+    public    $totalQueries = 0;
+    public    $totalRows    = 0;
+    public    $lastErrno    = null;
+    public    $lastError    = null;
 
     private $resource;
     private $hostname;
