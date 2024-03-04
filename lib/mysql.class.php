@@ -136,7 +136,7 @@ class MySQL extends Base
             return false;
         }
 
-        $this->debug(9,"connected, query($statement)");
+        $this->debug(9,"query($statement)");
 
         $result = mysqli_query($this->resource,$statement);
 
@@ -149,37 +149,16 @@ class MySQL extends Base
         return $result;
     }
 
-    public function fetchAssoc($result)
-    {
-        return mysqli_fetch_assoc($result);
-    }
-
-    public function fetchObject($result)
-    {
-        return mysqli_fetch_object($result);
-    }
-
-    public function freeResult($result)
-    {
-        mysqli_free_result($result);
-        return true;
-    }
-
     public function bindQuery($statement, $types, $data, $options = null)
     {
        $return = array();
-
-       $keyid    = isset($options['keyid'])     ? $options['keyid']     : false;
-       $multi    = isset($options['multi'])     ? $options['multi']     : true;
-       $serial   = isset($options['serialize']) ? $options['serialize'] : false;
-       $callback = isset($options['callback'])  ? $options['callback']  : false;
 
        if (!$this->connected) {
           $this->debug(1,"query requested, but database not connected");
           return false;
        }
 
-       $this->debug(9,"connected, bindquery($statement) types($types) data(".json_encode($data).")");
+       $this->debug(9,"bindquery($statement) types($types) data(".json_encode($data).")");
 
        $stmt = mysqli_prepare($this->resource,$statement);
 
@@ -199,8 +178,6 @@ class MySQL extends Base
           return false; 
        }
 
-       $this->debug(9,"query($statement) keyid($keyid) multi($multi) serial($serial) callback($callback)");
-
        $execResult = mysqli_stmt_execute($stmt);
 
        if ($execResult === false) {
@@ -216,34 +193,7 @@ class MySQL extends Base
            return $return;
        }
 
-       if ($multi) {
-           while ($rec = $this->fetchAssoc($result)) {
-              if (!$keyid) {
-                 $keyid = array_shift(array_keys($rec));
-                 $this->debug(9,"no keyid set, keyid($keyid)");
-              }
-
-              $id = $rec[$keyid];
-
-              if (!$id) { continue; }
-
-              if (is_callable($callback)) {
-                 call_user_func_array($callback,array($id,$rec,&$return));
-                 continue;
-              }
-
-              $return[$id] = ($serial) ? serialize($rec) : $rec;
-          }
-       }
-       else {
-          $return = $this->fetchAssoc($result);
-       }
-
-       $this->freeResult($result);
-
-       if (is_array($return)) { $this->debug(7,"loaded ".count($return)." elements"); }
-
-       return $return;
+       return $this->fetchResult($result,$options);
     }
 
     public function query($param, $options = null)
@@ -271,12 +221,7 @@ class MySQL extends Base
           $query = $param;
        }
 
-       $keyid    = isset($options['keyid'])     ? $options['keyid']     : false;
-       $multi    = isset($options['multi'])     ? $options['multi']     : 1;
-       $serial   = isset($options['serialize']) ? $options['serialize'] : 0;
-       $callback = isset($options['callback'])  ? $options['callback']  : 0;
-
-       $this->debug(9,"query($query) keyid($keyid) multi($multi) serial($serial) callback($callback)");
+       $this->debug(9,"query($query)");
 
        $result = $this->execute($query);
 
@@ -285,23 +230,38 @@ class MySQL extends Base
            return $return;
        }
 
+       return $this->fetchResult($result,$options);
+    }
+
+    private function fetchResult($result, $options = null)
+    { 
+       $return = array();
+
+       $keyid    = isset($options['keyid'])     ? $options['keyid']     : false;
+       $multi    = isset($options['multi'])     ? $options['multi']     : true;
+       $serial   = isset($options['serialize']) ? $options['serialize'] : false;
+       $callback = isset($options['callback'])  ? $options['callback']  : null;
+
+       $this->debug(9,json_encode(array('keyid' => $keyid, 'multi' => $multi, 'serialize' => $serial, 'callback' => $callback),JSON_UNESCAPED_SLASHES));
+       
        if ($multi) {
-           while ($rec = $this->fetchAssoc($result)) {
-              if (!$keyid) {
-                 $keyid = array_shift(array_keys($rec));
-                 $this->debug(9,"no keyid set, keyid($keyid)");
-              }
+          while ($rec = $this->fetchAssoc($result)) {
+             if (!$keyid) {
+                $recKeys = array_keys($rec);
+                $keyid   = array_shift($recKeys);
+                $this->debug(9,"no keyid set, keyid($keyid)");
+             }
 
-              $id = $rec[$keyid];
+             $id = $rec[$keyid];
 
-              if (!$id) { continue; }
+             if (!$id) { continue; }
 
-              if (is_callable($callback)) {
-                 call_user_func_array($callback,array($id,$rec,&$return));
-                 continue;
-              }
+             if (is_callable($callback)) {
+                call_user_func_array($callback,array($id,$rec,&$return));
+                continue;
+             }
 
-              $return[$id] = ($serial) ? serialize($rec) : $rec;
+             $return[$id] = ($serial) ? serialize($rec) : $rec;
           }
        }
        else {
@@ -313,6 +273,22 @@ class MySQL extends Base
        if (is_array($return)) { $this->debug(7,"loaded ".count($return)." elements"); }
 
        return $return;
+    }
+
+    public function fetchAssoc($result)
+    {
+        return mysqli_fetch_assoc($result);
+    }
+
+    public function fetchObject($result)
+    {
+        return mysqli_fetch_object($result);
+    }
+
+    public function freeResult($result)
+    {
+        mysqli_free_result($result);
+        return true;
     }
 
     public function insertId()
