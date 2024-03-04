@@ -56,7 +56,7 @@ class Cipher extends Base
       return $encdata;
    }
 
-   public function decode($encdata, $method = null, $key = null)
+   public function decode($encdata, $cipher = null, $key = null)
    {
       if (is_null($cipher)) { $cipher = $this->cipher; }
       if (is_null($key))    { $key    = $this->key; }
@@ -86,5 +86,3 @@ class Cipher extends Base
       return $output;
    }
 }
-
-?>

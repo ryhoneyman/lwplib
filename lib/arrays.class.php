@@ -305,5 +305,3 @@ class Arrays extends Base
       return $entry;
    }
 }
-
-?>

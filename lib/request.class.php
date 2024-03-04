@@ -146,4 +146,3 @@ class Request extends Base
       $this->parameters = $parameters;
    }
 }
-?>

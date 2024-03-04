@@ -268,11 +268,10 @@ class HTML extends Base
          $padding      = ($options['padding']) ? $options['padding'] : '10';
          $borderradius = ($options['border.radius']) ? $options['border.radius'] : '5';
 
-         return "<div id='$name' class='ui raised segment' style='background-color: #$background; width: $width; ".
-                  "display: $display; ".
-                  "border: ${bordersize}px #${bordercolor} solid; padding: ${padding}px; ".
-                  "-moz-border-radius: ${borderradius}px; -webkit-border-radius: ${borderradius}px; ".
-                  "border-radius: ${borderradius}px;'>$content</div>\n";
+         return sprintf("<div id='%s' class='ui raised segment' style='background-color:#%s; width:%s; ".
+                        "display:%s; border:%spx #%s solid; padding:%spx; -moz-border-radius:%spx; -webkit-border-radius:%spx; ".
+                        "border-radius:%spx;'>%s</div>\n",
+                        $name,$background,$width,$display,$bordersize,$bordercolor,$padding,$borderradius,$borderradius,$borderradius,$content);
 
        }
 
@@ -573,5 +572,3 @@ class HTML extends Base
              "document.getElementById('$id').innerHTML = '$text';\n</script>\n";
    }
 }
-
-?>

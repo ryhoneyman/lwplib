@@ -90,5 +90,3 @@ class Toastr extends Base
       return $this->options[$name]; 
    }
 }
-
-?>

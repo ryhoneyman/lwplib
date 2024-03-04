@@ -36,6 +36,7 @@ class HttpClient extends Base
    public    $responseVerbose = null;
    public    $responseSuccess = null;
    public    $responseBody    = null;
+   public    $requestHeaders  = null;
    public    $curlErrorCode   = null;
    public    $curlErrorMesg   = null;
 
@@ -183,7 +184,7 @@ class HttpClient extends Base
          $httpAuthType = $httpAuthList[$authType] ?: $httpAuthList['basic'];
 
          curl_setopt($curl,CURLOPT_HTTPAUTH,$httpAuthType);
-         curl_setopt($curl,CURLOPT_USERPWD,sprintf("%s:%s",$authUser,$userPass));
+         curl_setopt($curl,CURLOPT_USERPWD,sprintf("%s:%s",$authUser,$authPass));
       }
 
       if (!is_null($data)) {
@@ -274,8 +275,8 @@ class HttpClient extends Base
       $this->debug(9,"result: ".substr($result,0,256).(($resultSize > 256) ? '...' : ''));
 
       if ($verbose) {
-         rewind($verbosefile);
-         $this->responseVerbose = stream_get_contents($verbosefile);
+         rewind($verboseFile);
+         $this->responseVerbose = stream_get_contents($verboseFile);
       }
 
       return true;
@@ -338,5 +339,3 @@ class HttpClient extends Base
       return $return;
    }
 }
-
-?>

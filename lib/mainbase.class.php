@@ -1,8 +1,32 @@
 <?php
 
+/**
+ * @author    Ryan Honeyman
+ * @copyright 2024 Ryan Honeyman
+ * @license   MIT
+ */
+
 include_once 'base.class.php';
 include_once 'debug.class.php';
 
+/**
+ * MainBase
+ * 
+ * <code>
+ * options {
+ *    'database'       => true|'connect'|'prepare',
+ *    'sessionStart'   => true|false|array(sessionOptions),
+ *    'errorReporting' => true|false|string(error_reporting),
+ *    'debugLevel'     => 0-9,
+ *    'debugBuffer'    => true|false,
+ *    'memoryLimit'    => null|string(ini_mem),
+ *    'timezone'       => null|string(tz),
+ *    'sendCookies'    => true|false,
+ *    'sendHeaders'    => true|false,
+ * }
+ * </code>
+ *
+ */
 class MainBase extends Base
 {
    protected $version     = 1.0;
@@ -20,7 +44,13 @@ class MainBase extends Base
    public    $autoLoad    = false;
    public    $cliApp      = null;
    public    $webApp      = null;
-
+   
+   /**
+    * __construct - Creates the class object
+    *
+    * @param  array|null $options (optional, default null) Class control options
+    * @return void
+    */
    public function __construct($options = null)
    {
       $this->cliApp = (php_sapi_name() == "cli") ? true : false;
@@ -87,12 +117,37 @@ class MainBase extends Base
       // Final web hooks
       if ($this->webApp) { $this->webhookFinal(); }
    }
-
-   public function webhookFinal()   { return true; }
-   public function webhookInit()    { return true; }
-   public function webhookLogout()  { return false; }
+   
+   /**
+    * webhookFinal
+    * 
+    * @return bool
+    */
+   public function webhookFinal() { return true; }   
+   /**
+    * webhookInit
+    *
+    * @return bool
+    */
+   public function webhookInit() { return true; }   
+   /**
+    * webhookLogout
+    *
+    * @return bool
+    */
+   public function webhookLogout() { return false; }   
+   /**
+    * webhookStartup
+    *
+    * @return bool
+    */
    public function webhookStartup() { return true; }
-
+   
+   /**
+    * getInputVariables - Get GET/POST variables from the HTTP server
+    *
+    * @return array List of variables
+    */
    public function getInputVariables()
    {
       $return = array();
@@ -102,7 +157,13 @@ class MainBase extends Base
 
       return $return;
    }
-
+   
+   /**
+    * sendCookies - Send HTTP cookies
+    *
+    * @param  array|null $cookies (optional, default null) List of cookies name/info to send
+    * @return bool
+    */
    public function sendCookies($cookies = null)
    {
       if (!is_array($cookies)) { return true; }
@@ -113,7 +174,13 @@ class MainBase extends Base
 
       return true;
    }
-
+   
+   /**
+    * sendHeaders - Send HTTP headers
+    *
+    * @param  array|null $headers (optional, default null) List of headers name/value pairs to send
+    * @return bool
+    */
    public function sendHeaders($headers = null)
    {
       header("Expires: Thu, 01 Jan 1970 00:00:00 GMT");
@@ -128,20 +195,39 @@ class MainBase extends Base
 
       return true;
    }
-
+   
+   /**
+    * redirect - Send client redirect and exit
+    *
+    * @param  string $url Redirect URL
+    * @param  array|null $options (optional, default null) Redirect options [not implemented]
+    * @return void
+    */
    public function redirect($url, $options = null)
    {
       header("Location: $url"); 
       exit;
    }
-
+   
+   /**
+    * setDefaultTimezone - Set default timezone
+    *
+    * @param  string|null $tz (optional, default null) Timezone string
+    * @return void
+    */
    public function setDefaultTimezone($tz = null)
    {
       if (is_null($tz)) { $tz = 'Etc/UTC'; }
 
       date_default_timezone_set($tz);
    }
-
+   
+   /**
+    * setMemoryLimit - Set PHP memory limit
+    *
+    * @param  string|null $limit (optional, default null) PHP memory limit
+    * @return bool|null Memory limit set state
+    */
    public function setMemoryLimit($limit = null)
    {
       $this->debug(8,"called");
@@ -150,7 +236,13 @@ class MainBase extends Base
 
       return null;
    }
-
+   
+   /**
+    * enableErrorReporting - Set PHP error level
+    *
+    * @param  int|null $errorLevel (optional, default null) PHP error reporting level (defaults to E_ALL & ~E_NOTICE)
+    * @return bool|null Error Reporting state
+    */
    public function enableErrorReporting($errorLevel = null)
    {
       $this->debug(8,"called");
@@ -165,7 +257,15 @@ class MainBase extends Base
 
       return true;
    }
-
+   
+   /**
+    * sessionValue - Retrieve (and set) client session value
+    *
+    * @param  string $name Session key name
+    * @param  mixed|null $value (optional, default null) Session value to set
+    * @param  bool|null $clear (optional, default null) Whether to clear the session item
+    * @return mixed Value of session key
+    */
    public function sessionValue($name, $value = null, $clear = false)
    {
       if ($clear) { unset($_SESSION[$name]); return null; }
@@ -174,7 +274,13 @@ class MainBase extends Base
 
       return $_SESSION[$name]; 
    }
-
+   
+   /**
+    * sessionStart - Start HTTP client session with cookie
+    *
+    * @param  bool|array|null $options (optional, default null) Session control, true|false or session options, default is no session
+    * @return bool|null Session status
+    */
    public function sessionStart($options = null)
    {
       $this->debug(8,"called");
@@ -185,10 +291,15 @@ class MainBase extends Base
 
       return session_start($sessionOptions);
    }
-
+   
+   /**
+    * initialize - Initialize all requested main components
+    *
+    * @param  array $options Associative array of specific components to load
+    * @return bool Initialization status
+    */
    public function initialize($options)
    {
-
       $this->debug(8,"called");
 
       // if define is not in array format, convert it to array
@@ -232,8 +343,16 @@ class MainBase extends Base
             if (!call_user_func_array(array($this,'buildClass'),$buildParams)) { exit; }
          }
       }
-   }
 
+      return true;
+   }
+   
+   /**
+    * loadDefinesFromDB - Load global defines from the database
+    *
+    * @param  array|null $list (optional, default null) List of specific defines to load or all if not list provided
+    * @return bool Define load status
+    */
    public function loadDefinesFromDB($list = null)
    {
       if ($this->connectDatabase() === false) { return false; }
@@ -254,12 +373,18 @@ class MainBase extends Base
 
       return true;
    }
-
+   
+   /**
+    * disconnectDatabase - Disconnect a previously connected database
+    *
+    * @param  string|null $name (optional, default null) Database short name, uses default if not provided
+    * @return bool Database disconnected value
+    */
    public function disconnectDatabase($name = null)
    {
       $this->debug(8,"called");
 
-      if (is_a($this->db($name),$className) && !$this->db($name)->isConnected()) { return true; }
+      if (is_callable(array($this->db($name),'isConnected')) && !$this->db($name)->isConnected()) { return true; }
 
       if (is_null($name)) { $name = $this->settings['defaults']['db.name']; }
 
@@ -268,6 +393,15 @@ class MainBase extends Base
       return false;
    }
 
+   /**
+    * connectDatabase - Connect to a database
+    *
+    * @param  string|null $dbConfigFile (optional, default null) Database configuration file, uses default db.conf if not provided
+    * @param  string|null $name (optional, default null) Database short name, uses default if not provided
+    * @param  string|null $className Class name
+    * @param  string|null $fileName Filename of class
+    * @return bool Database prepared value
+    */
    public function prepareDatabase($dbConfigFile = null, $name = null, $className = null, $fileName = null)
    {
       $this->debug(8,"called");
@@ -294,7 +428,13 @@ class MainBase extends Base
 
       return true;
    }
-
+   
+   /**
+    * attachDatabase - Attach to a previously prepared database
+    *
+    * @param  string|null $name (optional, default null) Database short name, uses default if not provided
+    * @return bool Database connected value
+    */
    public function attachDatabase($name = null)
    {
       $this->debug(8,"called");
@@ -309,7 +449,16 @@ class MainBase extends Base
 
       return $attachResult;
    }
-
+   
+   /**
+    * connectDatabase - Connect to a database
+    *
+    * @param  string|null $dbConfigFile (optional, default null) Database configuration file, uses default db.conf if not provided
+    * @param  string|null $name (optional, default null) Database short name, uses default if not provided
+    * @param  string|null $className Class name
+    * @param  string|null $fileName Filename of class
+    * @return bool Database connected value
+    */
    public function connectDatabase($dbConfigFile = null, $name = null, $className = null, $fileName = null)
    {
       $this->debug(8,"called");
@@ -320,7 +469,13 @@ class MainBase extends Base
 
       return $connectResult;
    }
-
+   
+   /**
+    * isDatabaseConnected - Returns whether the named database is connected
+    *
+    * @param  string|null $name (optional, default null) Database short name, uses default if not provided
+    * @return bool Database connected value
+    */
    public function isDatabaseConnected($name = null)
    {
       $this->debug(8,"called");
@@ -331,7 +486,16 @@ class MainBase extends Base
 
       return $this->db($name)->isConnected();
    }
-
+   
+   /**
+    * buildClass - Instanciate a class
+    *
+    * @param  string $objName Class object identifier
+    * @param  string $className Class name
+    * @param  mixed|null $options Class options
+    * @param  string|null $fileName Filename of class
+    * @return bool Successful class build
+    */
    public function buildClass($objName, $className, $options = null, $fileName = null)
    {
       if (!$this->classList[$className] && !$this->autoLoad && !is_null($fileName)) { $this->includeClass($className,$fileName); }
@@ -350,7 +514,13 @@ class MainBase extends Base
 
       return true;
    }
-
+   
+   /**
+    * autoLoad - Class Autoloader 
+    *
+    * @param  string $function (optional, default autoLoader) Callback function for autoloading
+    * @return void
+    */
    public function autoLoad($function = 'autoLoader')
    {
       $this->autoLoad = true;
@@ -358,7 +528,13 @@ class MainBase extends Base
 
       $this->debug(9,"Autoload enabled");
    }
-
+   
+   /**
+    * autoLoader - Autoloader callback for load required class
+    *
+    * @param  string $className Name of class
+    * @return bool Successful class load
+    */
    public function autoLoader($className)
    {
       $lcName   = strtolower(basename(str_replace("\\",DIRECTORY_SEPARATOR,$className)));
@@ -366,55 +542,111 @@ class MainBase extends Base
 
       return $this->includeClass($className,$fileName);
    }
-
+   
+   /**
+    * includeClass - Loads a class if not already loaded
+    *
+    * @param  string $className Name of class
+    * @param  string $fileName Filename for class
+    * @return bool Success of loading class
+    */
    public function includeClass($className, $fileName)
    {
       $this->debug(8,"called");
 
+      $currentUsed = $this->classUsed();
+
+      if ($currentUsed[$className] == $fileName) { 
+         $this->debug(9,"Class $className (in $fileName) already loaded.");
+         return true; 
+      }
+
       $success = (!@include_once($fileName)) ? false : true;
 
-      $this->debug(9,"Trying to load class $className from file: $fileName (".(($success)?'success':'failure').")");
+      $this->debug(8,"Trying to load class $className from file: $fileName (".(($success)?'success':'failure').")");
 
       if ($success) { $this->classUsed($className,$fileName); }
 
       return $success;
    }
-
+   
+   /**
+    * classUsed - Set an entry in the class list once a class is used
+    *
+    * @param  string|null $className (optional, default null) Class name to register in class list
+    * @param  string|null $fileName (optional, default null) Filename of class 
+    * @return array Class list
+    */
    public function classUsed($className = null, $fileName = null)
    {
       if (!is_null($className)) { $this->classList[$className] = array('fileName' => $fileName); }
 
       return $this->classList;
    }
-
-   public function debugLevel($level)
+   
+   /**
+    * debugLevel - Gets and sets Debug object level value
+    *
+    * @param  int|null $level (optional, default null) Debugging level
+    * @return int
+    */
+   public function debugLevel($level = null)
    {
       return $this->debug->level($level);
    }
 
-   public function debugType($type)
+   /**
+    * debugType - Gets and sets Debug object type value (uses defines from Debug)
+    *
+    * @param  int|null $type (optional, default null) Debugging type
+    * @return int
+    */
+    public function debugType($type = null)
    {
       return $this->debug->type($type);
    }
-
-   public function debugBuffer($state)
+   
+   /**
+    * debugBuffer - Gets and sets Debug object buffer value
+    *
+    * @param  bool|null $state (optional, default null) Debugging buffer state
+    * @return bool
+    */
+   public function debugBuffer($state = null)
    {
       return $this->debug->buffer($state);
    }
-
+   
+   /**
+    * elapsedRuntime - Returns current elapsed runtime in seconds
+    *
+    * @return string Elapsed seconds
+    */
    public function elapsedRuntime()
    {
       return sprintf("%1.6f",microtime(true) - $this->startMs); 
    }
-
+   
+   /**
+    * db - Returns database object
+    *
+    * @param  string|null $name (optional, default null) Database short name, uses default if not provided
+    * @return object|null Database object
+    */
    public function db($name = null)
    {
       if (is_null($name)) { $name = $this->settings['defaults']['db.name']; }
 
       return $this->obj("db.$name");
    }
-
-   public function obj($name) { return $this->objects[$name]; }
+   
+   /**
+    * obj - Returns single object from objects list
+    *
+    * @param  string $name Object name
+    * @return object|null Object
+    */
+   public function obj($name) { 
+      return $this->objects[$name]; 
+   }
 }
-
-?>

@@ -53,13 +53,14 @@ class Debug extends Base
    public    $log     = array();
    private   $lastMs  = null;
 
-   //===================================================================================================
-   // Description: Creates the class object
-   // Input: int(level), Default level for debug filtering
-   // Input: int(type), Display debug type: DEBUG_HTML/COMMENT/CLI
-   // Input: array(options), Class control options
-   // Output: null()
-   //===================================================================================================
+   /**
+    * __construct - Creates the class object
+    *
+    * @param  int|null $level (optional, default 0) Default level for debug filtering: 0(none) - 9(full)
+    * @param  int|null $type (optional, default DEBUG_COMMENT) Display debug type: DEBUG_HTML/DEBUG_COMMENT/DEBUG_CLI
+    * @param  array|null $options (optional, default null) Class control options
+    * @return void
+    */
    public function __construct($level = 0, $type = DEBUG_COMMENT, $options = null)
    {
       $this->type($type);
@@ -70,13 +71,14 @@ class Debug extends Base
       $this->lastMs = microtime(true);
    }
 
-   //===================================================================================================
-   // Description: Performs a traceback to assert the current call
-   // Input: int(level), Level for this assertion
-   // Input: string(mesg), Debug message to send
-   // Input: int(caller), Caller index in the backtrace array
-   // Output: null()
-   //===================================================================================================
+   /**
+    * trace - Performs a traceback to assert the current call
+    *
+    * @param  int $level Debug level for this assertion
+    * @param  string $mesg Debug message to send
+    * @param  int|null $caller (optional, default 1) Caller index in the backtrace array
+    * @return void
+    */
    public function trace($level, $mesg, $caller = 1)
    {
       $current = $this->level();
@@ -102,72 +104,94 @@ class Debug extends Base
       else { print $output; }
    }
 
-   //===================================================================================================
-   // Description: Gets (and sets) current debug buffer mode
-   // Input: bool(value), Requested buffer mode, if supplied
-   // Output: bool(store), Current buffer setting
-   //===================================================================================================
+   /**
+    * buffer - Gets (and sets) current debug buffer mode
+    *
+    * @param  bool|null $value (optional, default null) Requested buffer mode, if supplied
+    * @return bool Current buffer setting
+    */
    public function buffer($value = null)
    {
       if (isset($value)) { $this->buffer = ($value) ? true : false; }
       return (($this->buffer) ? true : false);
    }
 
-   //===================================================================================================
-   // Description: Gets (and sets) current debug level
-   // Input: int(level), Global assertion level to set
-   // Output: int(level), Global assertion level
-   //===================================================================================================
+   /**
+    * level - Gets (and sets) current debug level
+    *
+    * @param  int|null $level (optional, default null) Global assertion level to set
+    * @return int Global assertion level
+    */
    public function level($level = null)
    {
       if (isset($level)) { $this->level = $level; }
       return $this->level;
    }
 
-   //===================================================================================================
-   // Description: Gets (and sets) current debug type
-   // Input: int(type), Global assertion type to set
-   // Output: int(type), Global assertion type
-   //===================================================================================================
+   /**
+    * type - Gets (and sets) current debug type (DEBUG_HTML/DEBUG_COMMENT/DEBUG_CLI)
+    *
+    * @param  int|null $type (optional, default null) Global assertion type to set
+    * @return int Global assertion type
+    */
    public function type($type = null)
    {
       if (isset($type)) { $this->type = $type; }
       return $this->type;
    }
 
-   //===================================================================================================
-   // Description: Detect if HTML debugging is enabled
-   // Input: null()
-   // Output: boolean(value), True if HTML debugging is enabled
-   //===================================================================================================
-   public function htmlize() { return ($this->type() == DEBUG_HTML); }
+   /**
+    * htmlize - Detect if HTML debugging is enabled
+    *
+    * @return bool True if HTML debugging is enabled
+    */
+   public function htmlize() { 
+      return ($this->type() == DEBUG_HTML); 
+   }
 
+   /**
+    * comment - Detect if COMMENT debugging is enabled
+    *
+    * @return bool True if COMMENT debugging is enabled
+    */
+   public function comment() { 
+      return ($this->type() == DEBUG_COMMENT); 
+   }
 
-   //===================================================================================================
-   // Description: Detect if COMMENT debugging is enabled
-   // Input: null()
-   // Output: boolean(value), True if COMMENT debugging is enabled
-   //===================================================================================================
-   public function comment() { return ($this->type() == DEBUG_COMMENT); }
-
-   //===================================================================================================
-   // Description: Returns current buffered log, then flushes it
-   // Output: string(log), Current log buffer
-   //===================================================================================================
+   /**
+    * getLog - Returns current buffered log, then flushes the entries
+    *
+    * @return array Current log buffer
+    */
    public function getLog()
    {
       $data = $this->log;
       $this->log = array();
       return $data;
    }
-
+   
+   /**
+    * writeFile - Writes entry to logfile
+    *
+    * @param  string $fileName File to write
+    * @param  string $mesg Message to write to file
+    * @param  bool|null $append (optional, default null) Append to file, off by default
+    * @return int|false Bytes written or false for error
+    */
    public function writeFile($fileName, $mesg, $append = null)
    {
       $flags = (is_null($append) || $append === true) ? FILE_APPEND : 0;
 
       return @file_put_contents($fileName,sprintf("[%s] %s\n",date('Y-m-d H:i:s'),$mesg),$flags);
    }
-
+   
+   /**
+    * traceDuration - Print a message and runtime duration in seconds
+    *
+    * @param  string $mesg Message to ouput
+    * @param  float|null $lastMs (optional, default null) Last microsecond timestamp, now by default
+    * @return bool Message written
+    */
    public function traceDuration($mesg, $lastMs = null)
    {
       if ($this->level < 9) { return false; }
@@ -185,5 +209,3 @@ class Debug extends Base
       return true;
    }
 }
-
-?>

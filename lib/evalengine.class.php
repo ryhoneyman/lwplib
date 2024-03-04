@@ -240,5 +240,3 @@ class EvalEngine extends Base
       return $result;
    }
 }
-
-?>

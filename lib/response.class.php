@@ -79,4 +79,3 @@ class Response extends Base
       echo $this->contentBody;
    }
 }
-?>

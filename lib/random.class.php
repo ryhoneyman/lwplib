@@ -139,5 +139,3 @@ class Random extends Base
       return substr(bin2hex($bytes),0,$length);
    }
 }
-
-?>

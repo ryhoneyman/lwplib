@@ -168,5 +168,3 @@ class Input extends Base
       return (isset($_GET[$name])) ? $_GET[$name] : ((isset($_POST[$name])) ? $_POST[$name] : $default);
    }
 }
-
-?>

@@ -1,5 +1,4 @@
 <?php
-
 //    Copyright 2023 - Ryan Honeyman
 
 include_once 'base.class.php';
@@ -25,4 +24,3 @@ class ConstantsBase extends Base
 
    public function list() { return $this->list; }
 }
-?>

@@ -47,7 +47,7 @@ class Mailer extends Base
       parent::__construct($debug,$options);
    }
 
-   public function mailServer($serverName, $serverPort, $serverCrypto = null, $allowInecure = null)
+   public function mailServer($serverName, $serverPort, $serverCrypto = null, $allowInsecure = null)
    {
       $this->dataValue('serverName',$serverName);
       $this->dataValue('serverPort',$serverPort);
@@ -83,7 +83,7 @@ class Mailer extends Base
 
    public function mailReplyTo($replyEmail, $replyName = null) 
    { 
-      $this->dataValue('Reply-To',$this->formatEmail($fromEmail,$fromName));
+      $this->dataValue('Reply-To',$this->formatEmail($replyEmail,$replyName));
    }
 
    public function mailToList($toList)
@@ -93,7 +93,7 @@ class Mailer extends Base
 
    public function mailTo($toEmail, $toName = null)
    {
-      $this->dataValue('To',array_merge($this->dataValue('To') ?: array(),array($this->formatEmail($fromEmail,$fromName))));
+      $this->dataValue('To',array_merge($this->dataValue('To') ?: array(),array($this->formatEmail($toEmail,$toName))));
    }
 
    public function mailCcList($ccList)
@@ -126,7 +126,7 @@ class Mailer extends Base
       $this->dataValue('Body',$body);
    }
 
-   public function mailAttachment($attachType, $attachmentName, $attachContents)
+   public function mailAttachment($attachType, $attachName, $attachContents)
    {
       $this->dataValue('Attachment',array_merge($this->dataValue('Attachment') ?: array(),array('type' => $attachType, 'name' => $attachName, 'contents' => $attachContents)));
    }
@@ -150,8 +150,10 @@ class Mailer extends Base
          $headers[$headerName] = $headerValue;
       }
 
-      $headerContent = implode($this->crlf,array_map(function($key,$value) { return "$key: $value"; }));
+      $headerContent = implode($this->crlf,array_map(function($key,$value) { return "$key: $value"; },$headers));
       $bodyChunked   = chunk_split(base64_encode($this->dataValue('Body')));
+
+      $boundaryAlternative = "__________".uniqid();
 
       $bodyContent = "Content-Type: multipart/alternative; boundary=\"{$boundaryAlternative}\"".$this->crlf.$this->crlf.
                      "--{$boundaryAlternative}".$this->crlf.
@@ -165,6 +167,7 @@ class Mailer extends Base
                      "--{$boundaryAlternative}--".$this->crlf;
 
       if (is_array($this->dataValue('Attachment'))) {
+         $boundaryMixed  = "__________".uniqid();
          $attachmentPart = $this->crlf.$this->crlf.
                            "--{$boundaryMixed}".$this->crlf.
                            $bodyContent;
@@ -246,8 +249,8 @@ class Mailer extends Base
 
    public function smtpAuthLogin($username, $password)
    {
-      if (($authResult = $this->smtpSendCommand("AUTH LOGIN".$this.crlf,334,"AUTH LOGIN start exception")) === false) { return false; }
-      if (($userResult = $this->smtpSendCommand($username.$this.crlf,334,"AUTH LOGIN username exception")) === false) { return false; }
+      if (($authResult = $this->smtpSendCommand("AUTH LOGIN".$this->crlf,334,"AUTH LOGIN start exception")) === false) { return false; }
+      if (($userResult = $this->smtpSendCommand($username.$this->crlf,334,"AUTH LOGIN username exception")) === false) { return false; }
       
       return $this->smtpSendCommand($password.$this->crlf,235,"AUTH LOGIN password exception");
   }
@@ -273,7 +276,7 @@ class Mailer extends Base
 
    public function smtpRcptTo($recipients)
    {
-      if (!is_array($receipients)) { $this->error("Invalid recipients"); return false; }
+      if (!is_array($recipients)) { $this->error("Invalid recipients"); return false; }
 
       foreach ($recipients as $recipient) {
          if ($this->smtpSendCommand("RCPT TO:<$recipient>".$this->crlf,250,"RCPT TO exception, recipient failure") === false) { return false; }
@@ -295,7 +298,7 @@ class Mailer extends Base
    {
       if (!$this->smtp) { $this->error("SMTP not connected"); return false; }
 
-      if ($command) { fputs($this->smtp,$command,strlen($comand)); }
+      if ($command) { fputs($this->smtp,$command,strlen($command)); }
 
       $response = fgets($this->smtp);
 
@@ -322,5 +325,3 @@ class Mailer extends Base
       return $this->data[$name];
    }
 }
-
-?>
