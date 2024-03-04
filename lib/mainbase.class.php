@@ -412,7 +412,8 @@ class MainBase extends Base
 
       if (is_a($this->db($name),$className) && $this->db($name)->isConnected()) { return true; }
 
-      if (is_null($dbConfigFile)) { $dbConfigFile = APP_CONFIGDIR.'/db.conf'; }
+      if (is_null($dbConfigFile))            { $dbConfigFile = APP_CONFIGDIR.'/db.conf'; }
+      if (!preg_match('~^/~',$dbConfigFile)) { $dbConfigFile = APP_CONFIGDIR.'/'.$dbConfigFile; }
 
       $dbConnect = json_decode(base64_decode(file_get_contents($dbConfigFile)),true);
 
