@@ -406,13 +406,14 @@ class MainBase extends Base
    {
       $this->debug(8,"called");
 
-      if (is_null($name))      { $name      = $this->settings['defaults']['db.name']; }
-      if (is_null($className)) { $className = 'MySQL'; }
-      if (is_null($fileName))  { $fileName  = 'mysql.class.php'; }
+      if (is_null($name))         { $name         = $this->settings['defaults']['db.name']; }
+      if (is_null($className))    { $className    = 'MySQL'; }
+      if (is_null($fileName))     { $fileName     = 'mysql.class.php'; }
+      if (is_null($dbConfigFile)) { $dbConfigFile = 'db.conf'; }
 
       if (is_a($this->db($name),$className) && $this->db($name)->isConnected()) { return true; }
 
-      if (is_null($dbConfigFile))            { $dbConfigFile = APP_CONFIGDIR.'/db.conf'; }
+      // If we were given a relative path, root it to the config directory
       if (!preg_match('~^/~',$dbConfigFile)) { $dbConfigFile = APP_CONFIGDIR.'/'.$dbConfigFile; }
 
       $dbConnect = json_decode(base64_decode(file_get_contents($dbConfigFile)),true);
