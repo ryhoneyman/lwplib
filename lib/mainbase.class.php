@@ -19,6 +19,7 @@ include_once 'debug.class.php';
  *    'errorReporting' => true|false|string(error_reporting),
  *    'debugLevel'     => 0-9,
  *    'debugBuffer'    => true|false,
+ *    'debugLogDir'    => null|string,
  *    'memoryLimit'    => null|string(ini_mem),
  *    'timezone'       => null|string(tz),
  *    'sendCookies'    => true|false,
@@ -79,6 +80,8 @@ class MainBase extends Base
       if (isset($options['errorReporting'])) { $this->enableErrorReporting($options['errorReporting']); }
 
       $this->debug = new Debug();
+
+      if ($options['debugLogDir']) { $this->debug->logDir = $options['debugLogDir']; }
 
       $this->objects['debug'] = $this->debug;
 
@@ -443,7 +446,10 @@ class MainBase extends Base
 
       if (is_null($name)) { $name = $this->settings['defaults']['db.name']; }
 
-      if (!$this->db($name)) { return false; }
+      if (!$this->db($name)) { 
+         $this->debug(9,"Database $name object does not exist");
+         return false; 
+      }
 
       $attachResult = $this->db($name)->attach();
 

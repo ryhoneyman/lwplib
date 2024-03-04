@@ -51,6 +51,7 @@ class Debug extends Base
    protected $type    = null;
    protected $buffer  = false;
    public    $log     = array();
+   public    $logDir  = null;
    private   $lastMs  = null;
 
    /**
@@ -182,7 +183,10 @@ class Debug extends Base
    {
       $flags = (is_null($append) || $append === true) ? FILE_APPEND : 0;
 
-      if (!preg_match('~^/~',$fileName)) { $fileName = APP_LOGDIR.'/'.$fileName; }
+      if (!preg_match('~^/~',$fileName)) { 
+         if (!is_dir($this->logDir)) { return false; } 
+         $fileName = $this->logDir.'/'.$fileName; 
+      }
 
       return @file_put_contents($fileName,sprintf("[%s] %s\n",date('Y-m-d H:i:s'),$mesg),$flags);
    }
