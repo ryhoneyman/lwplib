@@ -182,6 +182,8 @@ class Debug extends Base
    {
       $flags = (is_null($append) || $append === true) ? FILE_APPEND : 0;
 
+      if (!preg_match('~^/~',$fileName)) { $fileName = APP_LOGDIR.'/'.$fileName; }
+
       return @file_put_contents($fileName,sprintf("[%s] %s\n",date('Y-m-d H:i:s'),$mesg),$flags);
    }
    
