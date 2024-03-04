@@ -76,6 +76,6 @@ class Response extends Base
 
    public function sendBody()
    {
-      echo $this->contentBody;
+      print $this->contentBody;
    }
 }
