@@ -64,6 +64,9 @@ class Request extends Base
       $this->apiVersion = array_shift($this->pathList);
       $this->path       = '/'.implode('/',$this->pathList);
       $this->basePath   = $this->pathList[0];
+
+      $this->debug(9,json_encode(array('pathInfo' => $this->pathInfo, 'pathList' => $this->pathList, 'apiVersion' => $this->apiVersion, 
+                                       'path' => $this->path, 'basePath' => $this->basePath),JSON_UNESCAPED_SLASHES));
    }
 
    public function getParameters() 
