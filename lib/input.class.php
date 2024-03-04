@@ -44,7 +44,7 @@ class Input extends Base
    {
       parent::__construct($debug,$options);
 
-      $this->postBody = file_get_contents('php://input');
+      if (!$options['noBody']) { $this->postBody = file_get_contents('php://input'); }
 
       $this->patterns = array(
          'alpha'   => 'a-zA-Z',
