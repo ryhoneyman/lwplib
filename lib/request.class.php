@@ -103,8 +103,8 @@ class Request extends Base
          }
       }
 
-      // PUT/POST methods may have body information we need to process
-      if (preg_match('/^(put|post)$/i',$this->method)) { 
+      // PUT/POST/PATCH methods may have body information we need to process
+      if (preg_match('/^(put|post|patch)$/i',$this->method)) { 
          $this->debug(9,strtoupper($this->method).' detected, getting body...');
          $body = file_get_contents("php://input");
       }
