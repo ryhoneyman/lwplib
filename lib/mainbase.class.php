@@ -507,9 +507,9 @@ class MainBase extends Base
     */
    public function buildClass($objName, $className, $options = null, $fileName = null)
    {
-      if (!$this->classList[$className] && !$this->autoLoad && !is_null($fileName)) { $this->includeClass($className,$fileName); }
+      if (!$this->classList[$className] && !is_null($fileName)) { $this->includeClass($className,$fileName); }
 
-      if (!$this->classList[$className]) {
+      if (!$this->autoLoad && !$this->classList[$className]) {
          $this->debug(9,"Could not load class for $className");
          return false;
       }
