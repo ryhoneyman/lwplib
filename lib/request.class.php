@@ -114,7 +114,7 @@ class Request extends Base
          case "application/json":
             $this->debug(9,'JSON format requested, decode json body');
             $this->format = "json";
-            $bodyParams   = json_decode($body);
+            $bodyParams   = json_decode($body,true);
 
             if ($bodyParams) {
                foreach ($bodyParams as $bpName => $bpValue) {
