@@ -63,8 +63,6 @@ class MainBase extends Base
       $this->now      = time();
       $this->startMs  = microtime(true);
 
-      if ($options['autoLoad']) { $this->autoLoad($options['autoLoad']); }
-
       // Database control, whether we just prepare or keep a fully connection established when we're done initializing
       // Leaving the database disconnected until, and if, required can save resources
       if ($options['database'] === true || preg_match('/^connect$/i',$options['database'])) { $this->settings['connect.database'] = true; }
@@ -98,6 +96,8 @@ class MainBase extends Base
       );
 
       if ($options['memoryLimit']) { $this->setMemoryLimit($options['memoryLimit']); }
+
+      if ($options['autoLoad']) { $this->autoLoad($options['autoLoad']); }
 
       // Class initialization
       $this->initialize($options);
@@ -251,8 +251,6 @@ class MainBase extends Base
     */
    public function enableErrorReporting($errorLevel = null)
    {
-      $this->debug(8,"called");
-
       if ($errorLevel === false) { return null; }
 
       if (is_null($errorLevel) || $errorLevel === true) { $errorLevel = E_ALL & ~E_NOTICE; }
