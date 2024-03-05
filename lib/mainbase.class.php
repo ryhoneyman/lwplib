@@ -15,6 +15,7 @@ include_once 'debug.class.php';
  * <code>
  * options {
  *    'database'       => true|'connect'|'prepare',
+ *    'autoLoad'       => true|false|string(function),
  *    'sessionStart'   => true|false|array(sessionOptions),
  *    'errorReporting' => true|false|string(error_reporting),
  *    'debugLevel'     => 0-9,
@@ -61,6 +62,8 @@ class MainBase extends Base
       $this->hostname = php_uname('n');
       $this->now      = time();
       $this->startMs  = microtime(true);
+
+      if ($options['autoLoad']) { $this->autoLoad($options['autoLoad']); }
 
       // Database control, whether we just prepare or keep a fully connection established when we're done initializing
       // Leaving the database disconnected until, and if, required can save resources
@@ -526,15 +529,25 @@ class MainBase extends Base
    /**
     * autoLoad - Class Autoloader 
     *
-    * @param  string $function (optional, default autoLoader) Callback function for autoloading
-    * @return void
+    * @param  string|null $function (optional, default null) Callback function for autoloading, uses 'autoLoaderMain' function by default
+    * @return bool
     */
-   public function autoLoad($function = 'autoLoader')
+   public function autoLoad($function = null)
    {
+      if (is_null($function) || $function === true) { $function = array($this,'autoLoaderMain'); }
+
+      if (!is_callable($function)) { 
+         $this->debug(9,'Could not call autoloader function');
+         return false; 
+      }
+
       $this->autoLoad = true;
+
       spl_autoload_register($function);
 
       $this->debug(9,"Autoload enabled");
+
+      return true;
    }
    
    /**
@@ -543,7 +556,7 @@ class MainBase extends Base
     * @param  string $className Name of class
     * @return bool Successful class load
     */
-   public function autoLoader($className)
+   public function autoLoaderMain($className)
    {
       $lcName   = strtolower(basename(str_replace("\\",DIRECTORY_SEPARATOR,$className)));
       $fileName = "$lcName.class.php";
