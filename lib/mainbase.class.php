@@ -15,6 +15,7 @@ include_once 'debug.class.php';
  * <code>
  * options {
  *    'database'       => true|'connect'|'prepare',
+ *    'fileDefine'     => null|string,
  *    'dbDefine'       => null|string|array(defineList),
  *    'dbConfigDir'    => null|string,
  *    'autoLoad'       => true|false|string(function),
@@ -66,6 +67,7 @@ class MainBase extends Base
       $this->now      = time();
       $this->startMs  = microtime(true);
 
+      if ($options['fileDefine'] && is_file($options['fileDefine'])) { $this->loadDefinesFromFile($options['fileDefine']); }
       
       // Database control, whether we just prepare or keep a fully connection established when we're done initializing
       // Leaving the database disconnected until, and if, required can save resources
@@ -385,6 +387,25 @@ class MainBase extends Base
    }
    
    /**
+    * loadDefinesFromFile
+    *
+    * @param  string $fileName
+    * @return bool
+    */
+   public function loadDefinesFromFile($fileName)
+   {
+      if (!is_file($fileName)) { return false; }
+
+      $fileDefines = json_decode(@file_get_contents($fileName),true);
+
+      if ($fileDefines && !is_array($fileDefines)) { return false; }
+
+      foreach ($fileDefines as $defineKey => $defineValue) { define($defineKey,$defineValue); }
+
+      return true;
+   }
+   
+   /**
     * disconnectDatabase - Disconnect a previously connected database
     *
     * @param  string|null $name (optional, default null) Database short name, uses default if not provided
@@ -679,14 +700,15 @@ class MainBase extends Base
    }
    
    /**
-    * getDefine
+    * getDefined
     *
     * @param  string $key
     * @param  string|null $category
     * @return mixed|null
     */
-   public function getDefine($key, $category = null)
+   public function getDefined($key, $category = null)
    {
+      // We don't try to cache this locally because new constants may be set outside of our control
       $definedConstants = get_defined_constants(true);
 
       if (is_null($category)) { $category = 'user'; }
