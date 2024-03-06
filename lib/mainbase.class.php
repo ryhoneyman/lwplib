@@ -15,6 +15,8 @@ include_once 'debug.class.php';
  * <code>
  * options {
  *    'database'       => true|'connect'|'prepare',
+ *    'dbDefine'       => null|string|array(defineList),
+ *    'dbConfigDir'    => null|string,
  *    'autoLoad'       => true|false|string(function),
  *    'sessionStart'   => true|false|array(sessionOptions),
  *    'errorReporting' => true|false|string(error_reporting),
@@ -64,6 +66,7 @@ class MainBase extends Base
       $this->now      = time();
       $this->startMs  = microtime(true);
 
+      
       // Database control, whether we just prepare or keep a fully connection established when we're done initializing
       // Leaving the database disconnected until, and if, required can save resources
       if ($options['database'] === true || preg_match('/^connect$/i',$options['database'])) { $this->settings['connect.database'] = true; }
@@ -310,7 +313,7 @@ class MainBase extends Base
       $this->debug(8,"called");
 
       // if define is not in array format, convert it to array
-      if (!is_array($options['define'])) { $options['define'] = ($options['define']) ? array($options['define']) : array(); }
+      if (!is_array($options['dbDefine'])) { $options['dbDefine'] = ($options['dbDefine']) ? array($options['dbDefine']) : array(); }
 
       if ($this->settings['prepare.database']) { $this->prepareDatabase(); }
 
@@ -319,8 +322,8 @@ class MainBase extends Base
       }
 
       // load defines.  we have to do this directly because no data providers are loaded yet.
-      if ($options['define']) {
-         $this->loadDefinesFromDB($options['define']);
+      if ($options['dbDefine']) {
+         $this->loadDefinesFromDB($options['dbDefine']);
       }
 
       if ($options['request']) {
@@ -367,7 +370,7 @@ class MainBase extends Base
       // load defines.  we have to do this directly because no data providers are loaded yet.
       $defineList = array_map(function($value) { return "name like '".preg_replace('/[^\w\_\%]/','',$value)."'"; },array_unique($list));
 
-      $query   = "SELECT name,value FROM define WHERE (".implode(' OR ',$defineList).")";
+      $query   = "SELECT name,value FROM define".(($defineList) ? " WHERE (".implode(' OR ',$defineList).")" : '');
       $defines = $this->db()->query($query);
 
       if (!$defines) { return false; }
@@ -673,6 +676,22 @@ class MainBase extends Base
       if (is_null($name)) { $name = $this->settings['defaults']['db.name']; }
 
       return $this->obj("db.$name");
+   }
+   
+   /**
+    * getDefine
+    *
+    * @param  string $key
+    * @param  string|null $category
+    * @return mixed|null
+    */
+   public function getDefine($key, $category = null)
+   {
+      $definedConstants = get_defined_constants(true);
+
+      if (is_null($category)) { $category = 'user'; }
+
+      return $definedConstants[$category][$key] ?: null;
    }
    
    /**
