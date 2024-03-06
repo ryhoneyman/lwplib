@@ -148,6 +148,8 @@ class Request extends Base
          $this->debug(9,'Format override requested, using '.$this->format);
       }
 
+      $this->debug(9,"parameters loaded: ".json_encode(array_keys($parameters)));
+
       $this->parameters = $parameters;
    }
 }
