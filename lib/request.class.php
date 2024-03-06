@@ -116,7 +116,9 @@ class Request extends Base
          case "application/json":
             $this->debug(9,'JSON format requested, decode json body');
             $this->format = "json";
-            $bodyParams   = json_decode($body,true);
+            
+            // JSON does not allow non-encoded control characters in strings
+            $bodyParams = json_decode(str_replace(["\r","\n","\t"], ['\r','\n','\t'],$body),true);
 
             if ($bodyParams) {
                foreach ($bodyParams as $bpName => $bpValue) {
