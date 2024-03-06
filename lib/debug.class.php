@@ -164,13 +164,15 @@ class Debug extends Base
    /**
     * getLog - Returns current buffered log, then flushes the entries
     *
+    * @param  bool|null $implode (optional, default null) Return log array as imploded string
     * @return array Current log buffer
-    */
-   public function getLog()
+    */   
+   public function getLog($implode = null)
    {
-      $data = $this->log;
+      $data      = $this->log;
       $this->log = array();
-      return $data;
+
+      return (($implode) ? implode('',$data) : $data);
    }
    
    /**
