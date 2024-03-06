@@ -440,7 +440,7 @@ class MainBase extends Base
       $this->debug(8,"called");
 
       if (is_null($name))         { $name         = $this->settings['defaults']['db.name']; }
-      if (is_null($className))    { $className    = 'MySQL'; }
+      if (is_null($className))    { $className    = 'LWPLib\MySQL'; }
       if (is_null($fileName))     { $fileName     = 'mysql.class.php'; }
       if (is_null($dbConfigFile)) { $dbConfigFile = 'db.conf'; }
 
@@ -569,7 +569,7 @@ class MainBase extends Base
    /**
     * autoLoad - Class Autoloader 
     *
-    * @param  string|null $function (optional, default null) Callback function for autoloading, uses 'autoLoaderMain' function by default
+    * @param  array|string|null $function (optional, default null) Callback function for autoloading, uses 'autoLoaderMain' function by default
     * @return bool
     */
    public function autoLoad($function = null)
