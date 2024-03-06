@@ -44,6 +44,7 @@ class MainBase extends Base
    public    $userInfo    = array();
    public    $pageUri     = null;
    public    $autoLoad    = false;
+   public    $dbConfigDir = null;
    public    $cliApp      = null;
    public    $webApp      = null;
    
@@ -98,6 +99,8 @@ class MainBase extends Base
       if ($options['memoryLimit']) { $this->setMemoryLimit($options['memoryLimit']); }
 
       if ($options['autoLoad']) { $this->autoLoad($options['autoLoad']); }
+
+      if ($options['dbConfigDir']) { $this->setDatabaseConfigDir($options['dbConfigDir']); }
 
       // Class initialization
       $this->initialize($options);
@@ -417,8 +420,8 @@ class MainBase extends Base
 
       if (is_a($this->db($name),$className) && $this->db($name)->isConnected()) { return true; }
 
-      // If we were given a relative path, root it to the config directory
-      if (!preg_match('~^/~',$dbConfigFile)) { $dbConfigFile = APP_CONFIGDIR.'/'.$dbConfigFile; }
+      // If we were given a relative path, root it to the config directory if set or otherwise current directory
+      if (!preg_match('~^/~',$dbConfigFile)) { $dbConfigFile = ($this->dbConfigDir ?: __DIR__).'/'.$dbConfigFile; }
 
       $dbConnect = json_decode(base64_decode(file_get_contents($dbConfigFile)),true);
 
@@ -520,6 +523,19 @@ class MainBase extends Base
          $this->debug(9,"Could not build class object for $className");
          return false;
       }
+
+      return true;
+   }
+   
+   /**
+    * setDatabaseConfigDir
+    *
+    * @param  string|null $configDir
+    * @return bool
+    */
+   public function setDatabaseConfigDir($configDir = null)
+   {
+      if (!is_null($configDir)) { $this->dbConfigDir = $configDir; }
 
       return true;
    }
