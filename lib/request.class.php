@@ -1,5 +1,7 @@
 <?php
 
+namespace LWPLib;
+
 class Request extends Base
 {
    public $serverVars;    // Server environment variables loaded by the webserver

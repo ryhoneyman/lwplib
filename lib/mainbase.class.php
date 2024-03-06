@@ -1,5 +1,7 @@
 <?php
 
+namespace LWPLib;
+
 /**
  * @author    Ryan Honeyman
  * @copyright 2024 Ryan Honeyman

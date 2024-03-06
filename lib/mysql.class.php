@@ -1,5 +1,7 @@
 <?php
 
+namespace LWPLib;
+
 include_once 'base.class.php';
 
 class MySQL extends Base

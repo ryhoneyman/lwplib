@@ -1,5 +1,7 @@
 <?php
 
+namespace LWPLib;
+
 class Response extends Base
 {
    public $protocol        = 'HTTP/1.0';
