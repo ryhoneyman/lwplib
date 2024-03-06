@@ -1,4 +1,0 @@
-<?php
-
-const APP_CONFIGDIR = '';
-const APP_LOGDIR = '';
