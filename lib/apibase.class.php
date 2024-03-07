@@ -14,7 +14,7 @@ class APIBase extends Base
    protected $cacheInfo   = null;
    protected $authToken   = null;
    protected $authType    = null;
-   protected $authMethods = null;
+   protected $authMethods = array();
    public    $httpDebug   = null;
    public    $resultCode  = null;
    public    $errors      = array();
