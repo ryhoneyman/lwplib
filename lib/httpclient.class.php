@@ -246,6 +246,7 @@ class HttpClient extends Base
 
       // Decode response body is requested to do so
       if ($decode) {
+         $this->debug(9,"decode $decode requested");
          if (preg_match('/json/i',$decode)) { $this->responseBody = json_decode($result,true); }
       }
       else { $this->responseBody = $result; }
