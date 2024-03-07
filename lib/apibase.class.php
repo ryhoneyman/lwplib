@@ -105,7 +105,7 @@ class APIBase extends Base
          if ($headerTypes[$type]) { $headers = array_merge($headers,$headerTypes[$type]); }
       }
 
-      if ($requestTypes['json']) { $options['decode'] = 'json'; }
+      if (array_key_exists('json',$requestTypes)) { $options['decode'] = 'json'; }
 
       $success = $this->httpClient->send($url,$headers,$data,$options);
 
