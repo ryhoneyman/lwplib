@@ -8,7 +8,7 @@ include_once 'httpclient.class.php';
 class APIBase extends Base
 {
    protected $version     = 1.0;
-   protected $baseURL     = null;
+   protected $baseUrl     = null;
    protected $uris        = array();
    protected $httpClient  = null;
    protected $cacheInfo   = null;
@@ -113,13 +113,13 @@ class APIBase extends Base
          return false;
       }
 
-      if (!$this->baseURL) {
+      if (!$this->baseUrl) {
          $this->error("no baseURL set, cannot build url");
          return false;
       }
 
       $finalUrl    = null;
-      $templateUrl = sprintf("%s%s",$this->baseURL,$this->uris[$uriName]);
+      $templateUrl = sprintf("%s%s",$this->baseUrl,$this->uris[$uriName]);
 
       if (!is_null($params)) {
          $replace = array();
@@ -134,7 +134,7 @@ class APIBase extends Base
       return $finalUrl;
    }
 
-   public function loadURIs($uriList)
+   public function loadUris($uriList)
    {
       if (!is_array($uriList))    { $uriList = array($uriList); }
       if (!is_array($this->uris)) { $this->uris = array(); }
@@ -146,11 +146,11 @@ class APIBase extends Base
       return true;
    }
 
-   public function baseURL($baseURL = null)
+   public function baseUrl($baseUrl = null)
    {
-      if (!is_null($baseURL)) { $this->baseURL = $baseURL; }
+      if (!is_null($baseUrl)) { $this->baseUrl = $baseUrl; }
 
-      return $this->baseURL;
+      return $this->baseUrl;
    }
 
    public function authToken($authToken = null)
