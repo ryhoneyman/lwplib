@@ -278,7 +278,7 @@ class HttpClient extends Base
     */
    public function responseValue($name) 
    { 
-      return array_key_exists($name,$this->responseBody) ? $this->responseBody[$name] : null;
+      return (is_array($this->responseBody) && array_key_exists($name,$this->responseBody)) ? $this->responseBody[$name] : null;
    }
 
    public function responseFull() 
