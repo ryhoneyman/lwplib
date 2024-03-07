@@ -2,30 +2,6 @@
 
 namespace LWPLib;
 
-//    Copyright 2009,2010 - Ryan Honeyman
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation, either version 3 of the License, or
-//    (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
-//
-//    You should have received a copy of the GNU General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>
-//
-
-//======================================================================================================
-// Overview: cURL library for PHP
-//======================================================================================================
-/* Example:
-
-*/
-//======================================================================================================
-
 include_once 'base.class.php';
 
 class HttpClient extends Base
@@ -189,7 +165,7 @@ class HttpClient extends Base
          curl_setopt($curl,CURLOPT_USERPWD,sprintf("%s:%s",$authUser,$authPass));
       }
 
-      if (!is_null($data)) {
+      if (!is_null($data) || $method == 'POST') {
          if (!$method) { $method = 'POST'; }
 
          $postFields = $this->formatBody($headers['Content-Type'],$data);
@@ -202,8 +178,8 @@ class HttpClient extends Base
             // temporary solution to remove specific passwords
             $replaceInfo = array(
                'pattern' => array(
-                  '/(password)=\S+?\&/i',
-                  '/"(password)":"\S+?"/i'
+                  '/(\w*password)=\S+?\&/i',
+                  '/"(\w*password)":"\S+?"/i'
                ),
                'replacement' => array(
                   '$1=*****&',
@@ -282,6 +258,10 @@ class HttpClient extends Base
       }
 
       return true;
+   }
+
+   public function responseFull() { 
+      return $this->response('full'); 
    }
 
    public function response($type = null)
