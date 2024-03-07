@@ -54,7 +54,7 @@ class APIBase extends Base
          return false;
       }
 
-      $response = $this->httpClient->response;
+      $response = $this->httpClient->response();
       $data     = $response['data'];
       $status   = $response['status'];
       $error    = $response['error'];
