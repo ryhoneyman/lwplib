@@ -371,6 +371,8 @@ class MainBase extends Base
    {
       if ($this->connectDatabase() === false) { return false; }
 
+      if ($list && !is_array($list)) { $list = explode(',',$list); }
+
       // load defines.  we have to do this directly because no data providers are loaded yet.
       $defineList = array_map(function($value) { return "name like '".preg_replace('/[^\w\_\%]/','',$value)."'"; },array_unique($list));
 
