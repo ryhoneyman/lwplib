@@ -364,7 +364,7 @@ class MainBase extends Base
    /**
     * loadDefinesFromDB - Load global defines from the database
     *
-    * @param  array|null $list (optional, default null) List of specific defines to load or all if not list provided
+    * @param  array|string|null $list (optional, default null) List of specific defines to load or all if not list provided
     * @return bool Define load status
     */
    public function loadDefinesFromDB($list = null)
