@@ -224,9 +224,9 @@ class APIBase extends Base
 
       if (!$authMethod) { return null; }
 
-      $this->debug(9,"authMethod: ".json_encode($authMethod));
-
       $authMethod = json_decode(str_replace('{{token}}',$this->authToken,json_encode($authMethod)),true);
+
+      $this->debug(9,"authMethod: ".json_encode($authMethod));
 
       return $authMethod;
    }
