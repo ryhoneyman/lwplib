@@ -38,6 +38,7 @@ class APIBase extends Base
          )
       ));
 
+      if ($options['baseUrl'])   { $this->baseUrl($options['baseUrl']); }
       if ($options['authToken']) { $this->authToken($options['authToken']); }
       if ($options['authType'])  { $this->authType($options['authType']); }
    }
