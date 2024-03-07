@@ -208,7 +208,7 @@ class HttpClient extends Base
          foreach ($headers as $headerKey => $headerValue) {
             $httpHeaders[] = "$headerKey: $headerValue";
 
-            if (preg_match('/authorization|authentication/i',$headerKey)) { $headerValue = '*****'; }
+            if (preg_match('/z(authorization|authentication)/i',$headerKey)) { $headerValue = '*****'; }
 
             $this->debug(9,"Header> $headerKey: $headerValue");
          }

@@ -214,11 +214,13 @@ class APIBase extends Base
       // If no or invalid auth type was provided, we'll assume authorization bearer header with no auth in the body
       if (is_null($this->authType) || !$this->authMethods[$this->authType]) { $this->authType('auth.header.bearer'); }
 
-      $this->debug(9,"authMethod: ".$this->authType);
+      $this->debug(9,"authType: ".$this->authType);
 
       $authMethod = $this->authMethods[$this->authType];
 
       if (!$authMethod) { return null; }
+
+      $this->debug(9,"authMethod: ".json_encode($authMethod));
 
       $authMethod = json_decode(str_replace('{{token}}',$this->authToken,json_encode($authMethod)),true);
 
