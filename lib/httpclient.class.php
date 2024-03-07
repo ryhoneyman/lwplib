@@ -67,7 +67,16 @@ class HttpClient extends Base
 
       return $this->send($url,$headers,null,$options);
    }
-
+   
+   /**
+    * send
+    *
+    * @param  string $url
+    * @param  array|null $headers
+    * @param  array|string|null $data
+    * @param  array|null $options
+    * @return bool
+    */
    public function send($url, $headers = null, $data = null, $options = null)
    {
       $method     = strtoupper($options['method']) ?: null;
