@@ -55,7 +55,6 @@ class APIBase extends Base
       }
 
       $response = $this->httpClient->response();
-      $data     = $response['data'];
       $status   = $response['status'];
       $error    = $response['error'];
 
@@ -66,12 +65,12 @@ class APIBase extends Base
       }
 
       // status of request was ok, but an error indicating a problem was found, set error and return
-      if ($data['error']) {
-         $this->error($data['error']);
+      if ($error) {
+         $this->error($error);
          return false;
       }
 
-      return $data;
+      return $response;
    }
 
    public function makeRequest($url, $requestType = null, $requestParams = null)
