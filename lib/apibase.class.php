@@ -118,17 +118,33 @@ class APIBase extends Base
    { 
       return $this->httpClient->error(); 
    }
-
+   
+   /**
+    * clientResponseValue
+    *
+    * @param  string $value
+    * @return mixed
+    */
    public function clientResponseValue($value) 
    { 
       return $this->httpClient->responseValue($value); 
    }
-
+   
+   /**
+    * clientResponseFull
+    *
+    * @return mixed
+    */
    public function clientResponseFull() 
    { 
       return $this->httpClient->responseFull(); 
    }
-
+   
+   /**
+    * clientResponse
+    *
+    * @return mixed
+    */
    public function clientResponse() 
    { 
       return $this->httpClient->response(); 
