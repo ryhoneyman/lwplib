@@ -268,8 +268,20 @@ class HttpClient extends Base
 
       return true;
    }
+   
+   /**
+    * responseValue
+    *
+    * @param  string $name
+    * @return mixed
+    */
+   public function responseValue($name) 
+   { 
+      return $this->responseBody[$name]; 
+   }
 
-   public function responseFull() { 
+   public function responseFull() 
+   { 
       return $this->response('full'); 
    }
 

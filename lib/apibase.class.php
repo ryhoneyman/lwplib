@@ -115,6 +115,21 @@ class APIBase extends Base
       return $success;   
    }
 
+   public function clientError() 
+   { 
+      return $this->httpClient->error(); 
+   }
+
+   public function clientResponseValue($value) 
+   { 
+      return $this->httpClient->responseValue($value); 
+   }
+
+   public function clientResponseFull() 
+   { 
+      return $this->httpClient->responseFull(); 
+   }
+
    // return formed url or false on error
    private function buildURL($uriName, $params = null)
    {
