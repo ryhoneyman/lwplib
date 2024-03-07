@@ -42,21 +42,30 @@ class APIBase extends Base
       if ($options['authType'])  { $this->authType($options['authType']); }
    }
 
-   public function standardAPIRequest($uriName, $params = null)
+   public function standardAPIRequest($url, $params = null)
    {
       $this->debug(8,"called");
 
-      $response = $this->makeRequest($uriName,"auth,json",$params);
-      $result   = $this->jsonDecode($response['result']);
-      $data     = $result['data'];
+      $requestResult = $this->makeRequest($url,"auth,json",$params);
 
-      // status of request errored, set error and return
-      if (!preg_match('/^(ok|success|multi)$/i',$result['status'])) {
-         $this->error($result['error']);
+      if ($requestResult === false) {
+         $this->error($this->httpClient->error());
          return false;
       }
+
+      $response = $this->httpClient->response;
+      $data     = $response['data'];
+      $status   = $response['status'];
+      $error    = $response['error'];
+
+      // status of request errored, set error and return
+      if ($status && !preg_match('/^(ok|success|multi)$/i',$status)) {
+         $this->error($error);
+         return false;
+      }
+
       // status of request was ok, but an error indicating a problem was found, set error and return
-      else if ($data['error']) {
+      if ($data['error']) {
          $this->error($data['error']);
          return false;
       }
@@ -95,6 +104,8 @@ class APIBase extends Base
       foreach (array_keys($requestTypes) as $type) {
          if ($headerTypes[$type]) { $headers = array_merge($headers,$headerTypes[$type]); }
       }
+
+      if ($requestTypes['json']) { $options['decode'] = 'json'; }
 
       $success = $this->httpClient->send($url,$headers,$data,$options);
 
