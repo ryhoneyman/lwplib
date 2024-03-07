@@ -376,7 +376,7 @@ class MainBase extends Base
       // load defines.  we have to do this directly because no data providers are loaded yet.
       $defineList = array_map(function($value) { return "name like '".preg_replace('/[^\w\_\%]/','',$value)."'"; },array_unique($list));
 
-      $query   = "SELECT name,value FROM define".(($defineList) ? " WHERE (".implode(' OR ',$defineList).")" : '');
+      $query   = "SELECT name,value FROM defines".(($defineList) ? " WHERE (".implode(' OR ',$defineList).")" : '');
       $defines = $this->db()->query($query);
 
       if (!$defines) { return false; }
