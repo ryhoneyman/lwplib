@@ -238,22 +238,22 @@ class MySQL extends Base
     { 
        $return = array();
 
-       $keyid    = isset($options['keyid'])     ? $options['keyid']     : false;
-       $multi    = isset($options['multi'])     ? $options['multi']     : true;
+       $index    = isset($options['index'])     ? $options['index']     : false;
+       $single   = isset($options['single'])    ? $options['single']    : false;
        $serial   = isset($options['serialize']) ? $options['serialize'] : false;
        $callback = isset($options['callback'])  ? $options['callback']  : null;
 
-       $this->debug(9,json_encode(array('keyid' => $keyid, 'multi' => $multi, 'serialize' => $serial, 'callback' => $callback),JSON_UNESCAPED_SLASHES));
+       $this->debug(9,json_encode(array('index' => $index, 'single' => $single, 'serialize' => $serial, 'callback' => $callback),JSON_UNESCAPED_SLASHES));
        
-       if ($multi) {
+       if (!$single) {
           while ($rec = $this->fetchAssoc($result)) {
-             if (!$keyid) {
+             if (!$index) {
                 $recKeys = array_keys($rec);
-                $keyid   = array_shift($recKeys);
-                $this->debug(9,"no keyid set, keyid($keyid)");
+                $index   = array_shift($recKeys);
+                $this->debug(9,"no index set, index($index)");
              }
 
-             $id = $rec[$keyid];
+             $id = $rec[$index];
 
              if (!$id) { continue; }
 
