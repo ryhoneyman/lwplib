@@ -18,7 +18,14 @@ class APIBase extends Base
    public    $httpDebug   = null;
    public    $resultCode  = null;
    public    $errors      = array();
-
+   
+   /**
+    * __construct
+    *
+    * @param  Debug|null $debug
+    * @param  array|null $options
+    * @return void
+    */
    public function __construct($debug = null, $options = null)
    {
       parent::__construct($debug,$options);
@@ -42,7 +49,14 @@ class APIBase extends Base
       if ($options['authToken']) { $this->authToken($options['authToken']); }
       if ($options['authType'])  { $this->authType($options['authType']); }
    }
-
+   
+   /**
+    * standardAPIRequest
+    *
+    * @param  string $url
+    * @param  array|null $params
+    * @return mixed
+    */
    public function standardAPIRequest($url, $params = null)
    {
       $this->debug(8,"called");
@@ -72,7 +86,15 @@ class APIBase extends Base
 
       return $response;
    }
-
+   
+   /**
+    * makeRequest
+    *
+    * @param  string $url
+    * @param  string|null $requestType
+    * @param  array|null $requestParams
+    * @return bool
+    */
    public function makeRequest($url, $requestType = null, $requestParams = null)
    {    
       $this->debug(8,"called");
@@ -113,7 +135,12 @@ class APIBase extends Base
 
       return $success;   
    }
-
+   
+   /**
+    * clientError
+    *
+    * @return mixed
+    */
    public function clientError() 
    { 
       return $this->httpClient->error(); 
@@ -180,33 +207,56 @@ class APIBase extends Base
 
       return $finalUrl;
    }
-
+   
+   /**
+    * loadUris
+    *
+    * @param  array $uriList
+    * @return bool|null
+    */
    public function loadUris($uriList)
    {
-      if (!is_array($uriList))    { $uriList = array($uriList); }
-      if (!is_array($this->uris)) { $this->uris = array(); }
-
       if (empty($uriList)) { return null; }
+
+      if (!is_array($this->uris)) { $this->uris = array(); }
 
       $this->uris = array_merge($this->uris,$uriList);
 
       return true;
    }
-
+   
+   /**
+    * baseUrl
+    *
+    * @param  string $baseUrl
+    * @return string|null
+    */
    public function baseUrl($baseUrl = null)
    {
       if (!is_null($baseUrl)) { $this->baseUrl = $baseUrl; }
 
       return $this->baseUrl;
    }
-
+   
+   /**
+    * authToken
+    *
+    * @param  string $authToken
+    * @return string|null
+    */
    public function authToken($authToken = null)
    {
       if (!is_null($authToken)) { $this->authToken = $authToken; }
 
       return $this->authToken;
    }
-
+   
+   /**
+    * authType
+    *
+    * @param  string $authType
+    * @return string|null
+    */
    public function authType($authType = null)
    {
       $this->debug(8,"called: $authType");
@@ -215,7 +265,13 @@ class APIBase extends Base
 
       return $this->authType;
    }
-
+   
+   /**
+    * addAuthMethod
+    *
+    * @param  array $authMethod
+    * @return bool|null
+    */
    public function addAuthMethod($authMethod)
    {
       $this->debug(8,"called");
@@ -226,7 +282,12 @@ class APIBase extends Base
 
       return true;
    }
-
+   
+   /**
+    * getAuthMethod
+    *
+    * @return array|null
+    */
    public function getAuthMethod()
    {
       $this->debug(8,"called");
@@ -246,7 +307,15 @@ class APIBase extends Base
 
       return $authMethod;
    }
-
+   
+   /**
+    * cacheInfo
+    *
+    * @param  string $name
+    * @param  mixed $data
+    * @param  int|null $expires
+    * @return mixed
+    */
    protected function cacheInfo($name, $data = null, $expires = 900)
    {
       $this->debug(8,"called for $name");
@@ -286,7 +355,15 @@ class APIBase extends Base
 
       return (isset($this->cacheInfo['data'][$name]) ? $this->cacheInfo['data'][$name] : null);
    }
-
+   
+   /**
+    * addCacheInfoFile
+    *
+    * @param  string $name
+    * @param  string $fileName
+    * @param  int|null $expires
+    * @return bool|null
+    */
    public function addCacheInfoFile($name, $fileName, $expires = null)
    {
       if (!$name || !$fileName) { return null; }
@@ -295,19 +372,17 @@ class APIBase extends Base
 
       return true;
    }
-
+   
+   /**
+    * cacheInfoDir
+    *
+    * @param  string|null $dirName
+    * @return string|null
+    */
    public function cacheInfoDir($dirName = null)
    {
       if (!is_null($dirName) && is_dir($dirName)) { $this->cacheInfo['dir'] = $dirName; }
 
       return $this->cacheInfo['dir'];
-   }
-
-   // returns decoded JSON or null on failure
-   protected function jsonDecode($jsonString)
-   {
-      $jsonResult = json_decode($jsonString,true);
-
-      return ((!is_null($jsonResult) && json_last_error() == JSON_ERROR_NONE) ? $jsonResult : null);
    }
 }
