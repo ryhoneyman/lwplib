@@ -331,23 +331,23 @@ class MainBase extends Base
       }
 
       if ($options['request']) {
-         if (!$this->buildClass('request','Request',null,'request.class.php')) { exit; }
+         if (!$this->buildClass('request','LWPLib\Request',null,'request.class.php')) { exit; }
       }
 
       if ($options['input']) {
-         if (!$this->buildClass('input','Input',null,'input.class.php')) { exit; }
+         if (!$this->buildClass('input','LWPLib\Input',null,'input.class.php')) { exit; }
       }
 
       if ($options['html']) {
-         if (!$this->buildClass('html','HTML',null,'html.class.php')) { exit; }
+         if (!$this->buildClass('html','LWPLib\HTML',null,'html.class.php')) { exit; }
       }
 
       if ($options['adminlte']) {
-         if (!$this->buildClass('adminlte','AdminLTE',null,'adminlte.class.php')) { exit; }
+         if (!$this->buildClass('adminlte','LWPLib\AdminLTE',null,'adminlte.class.php')) { exit; }
       }
 
       if ($options['toastr']) {
-         if (!$this->buildClass('toastr','Toastr',null,'toastr.class.php')) { exit; }
+         if (!$this->buildClass('toastr','LWPLib\Toastr',null,'toastr.class.php')) { exit; }
       }
 
       if ($options['require']) {
