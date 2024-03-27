@@ -69,45 +69,43 @@ class MainBase extends Base
       $this->now      = time();
       $this->startMs  = microtime(true);
 
-      if ($options['fileDefine'] && is_file($options['fileDefine'])) { $this->loadDefinesFromFile($options['fileDefine']); }
+      if ($this->ifOption('fileDefine') && is_file($options['fileDefine'])) { $this->loadDefinesFromFile($options['fileDefine']); }
       
       // Database control, whether we just prepare or keep a fully connection established when we're done initializing
       // Leaving the database disconnected until, and if, required can save resources
-      if ($options['database'] === true || preg_match('/^connect$/i',$options['database'])) { $this->settings['connect.database'] = true; }
+      if ($this->ifOption('database') && ($options['database'] === true || preg_match('/^connect$/i',$options['database']))) { $this->settings['connect.database'] = true; }
       else if (preg_match('/^prepare$/i',$options['database'])) { $this->settings['prepare.database'] = true; }
 
       // Pre-web startup hooks
       if ($this->webApp) { $this->webhookStartup(); }
 
       // session control must be the very first thing we address, due to header interactions
-      if (isset($options['sessionStart'])) { $this->sessionStart($options['sessionStart']); }
+      if ($this->ifOption('sessionStart') && isset($options['sessionStart'])) { $this->sessionStart($options['sessionStart']); }
 
       // Logout hook
       if ($this->webApp) { if ($this->webhookLogout()) { exit; } }
 
       // must turn on error reporting, if requested, immediately to catch errors
-      if (isset($options['errorReporting'])) { $this->enableErrorReporting($options['errorReporting']); }
+      if ($this->ifOption('errorReporting') && isset($options['errorReporting'])) { $this->enableErrorReporting($options['errorReporting']); }
 
       $this->debug = new Debug();
 
-      if ($options['debugLogDir']) { $this->debug->logDir = $options['debugLogDir']; }
+      if ($this->ifOption('debugLogDir')) { $this->debug->logDir = $options['debugLogDir']; }
 
       $this->objects['debug'] = $this->debug;
 
       // Setup debugging options before debugging occurrs.
       if ($this->cliApp) { $this->debugType(DEBUG_CLI); }
-      if (isset($options['debugLevel']))  { $this->debugLevel($options['debugLevel']); }
-      if (isset($options['debugBuffer'])) { $this->debugBuffer($options['debugBuffer']); }
+      if ($this->ifOption('debugLevel'))  { $this->debugLevel($options['debugLevel']); }
+      if ($this->ifOption('debugBuffer')) { $this->debugBuffer($options['debugBuffer']); }
 
       $this->settings['defaults'] = array(
          'db.name' => 'default',
       );
 
-      if ($options['memoryLimit']) { $this->setMemoryLimit($options['memoryLimit']); }
-
-      if ($options['autoLoad']) { $this->autoLoad($options['autoLoad']); }
-
-      if ($options['dbConfigDir']) { $this->setDatabaseConfigDir($options['dbConfigDir']); }
+      if ($this->ifOption('memoryLimit')) { $this->setMemoryLimit($options['memoryLimit']); }
+      if ($this->ifOption('autoLoad'))    { $this->autoLoad($options['autoLoad']); }
+      if ($this->ifOption('dbConfigDir')) { $this->setDatabaseConfigDir($options['dbConfigDir']); }
 
       // Class initialization
       $this->initialize($options);
@@ -118,8 +116,8 @@ class MainBase extends Base
          $this->webhookInit();
       }
 
-      if ($options['sendCookies']) { $this->sendCookies($options['sendCookies']); }
-      if ($options['sendHeaders']) { $this->sendHeaders($options['sendHeaders']); }
+      if ($this->ifOption('sendCookies')) { $this->sendCookies($options['sendCookies']); }
+      if ($this->ifOption('sendHeaders')) { $this->sendHeaders($options['sendHeaders']); }
 
       if ($this->webApp) {
          $this->pageUri            = $_SERVER['SCRIPT_NAME'];
@@ -719,7 +717,7 @@ class MainBase extends Base
 
       return $definedConstants[$category][$key] ?: null;
    }
-   
+
    /**
     * obj - Returns single object from objects list
     *
@@ -728,5 +726,16 @@ class MainBase extends Base
     */
    public function obj($name) { 
       return $this->objects[$name]; 
+   }
+   
+   /**
+    * ifOption - verify a specific option was set
+    *
+    * @param  string $name
+    * @return bool
+    */
+   private function ifOption($name)
+   {
+      return (array_key_exists($name,$this->options) ? true : false);
    }
 }
