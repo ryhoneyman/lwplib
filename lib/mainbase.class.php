@@ -61,6 +61,8 @@ class MainBase extends Base
     */
    public function __construct($options = null)
    {
+      parent::__construct(null,$options);
+
       $this->cliApp = (php_sapi_name() == "cli") ? true : false;
       $this->webApp = !$this->cliApp;
 
