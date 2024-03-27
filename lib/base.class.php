@@ -94,22 +94,38 @@ class Base
       $this->debug->trace($level,$message,$tracelevel);
    }
 
-   //===================================================================================================
-   // Description: Checks whether an array is associative
-   // Input: array(array), Name of array to check
-   // Output: boolean(value), True if array was associative
-   //===================================================================================================
+   /**
+    * isAssoc - Checks whether an array is associative
+    *
+    * @param  mixed $array Name of array to check
+    * @return bool 
+    */
    public function isAssoc($array) {
        return (is_array($array) && 0 !== count(array_diff_key($array, array_keys(array_keys($array)))));
    }
-
+   
+   /**
+    * isJson - Checks whether a string is in JSON format
+    *
+    * @param  string $string Candidate JSON string
+    * @return bool
+    */
    public function isJson($string) {
       return (!empty($string) && is_string($string) && is_array(json_decode($string,true)) && json_last_error() == 0);
    }
-
+   
+   /**
+    * error
+    *
+    * @param  ?string $errorMessage
+    * @return ?string
+    */
    public function error($errorMessage = null)
    {
-      if (!is_null($errorMessage)) { $this->errors[] = $errorMessage; }
+      if (!is_null($errorMessage)) { 
+         $this->errors[] = $errorMessage; 
+         return null;
+      }
       else {
          $errors = implode('; ',$this->errors);
          $this->errors = array();
@@ -117,4 +133,15 @@ class Base
          return $errors;
       }
    }
+
+   /**
+    * ifOption - verify a specific option was set
+    *
+    * @param  string $name
+    * @return bool
+    */
+    protected function ifOption($name)
+    {
+       return (array_key_exists($name,$this->options) ? true : false);
+    }
 }

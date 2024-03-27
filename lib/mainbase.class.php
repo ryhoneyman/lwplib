@@ -112,7 +112,8 @@ class MainBase extends Base
 
       // Pre-initialize startup hooks
       if ($this->webApp) { 
-         $this->setDefaultTimezone($options['timezone']);
+         $timezone = ($this->ifOption('timezone')) ? $options['timezone'] : null;
+         $this->setDefaultTimezone($timezone);
          $this->webhookInit();
       }
 
@@ -120,8 +121,9 @@ class MainBase extends Base
       if ($this->ifOption('sendHeaders')) { $this->sendHeaders($options['sendHeaders']); }
 
       if ($this->webApp) {
-         $this->pageUri            = $_SERVER['SCRIPT_NAME'];
-         $this->userInfo['ipAddr'] = ($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
+         $this->pageUri            = (array_key_exists('SCRIPT_NAME',$_SERVER)) ? $_SERVER['SCRIPT_NAME'] : '';
+         $this->userInfo['ipAddr'] = (array_key_exists('HTTP_X_FORWARDED_FOR',$_SERVER)) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : 
+                                     (array_key_exists('REMOTE_ADDR',$_SERVER) ? $_SERVER['REMOTE_ADDR'] : null);
       }
       else {
          $this->userName = get_current_user().'@'.$this->hostname;
@@ -315,11 +317,11 @@ class MainBase extends Base
       $this->debug(8,"called");
 
       // if define is not in array format, convert it to array
-      if (!is_array($options['dbDefine'])) { $options['dbDefine'] = ($options['dbDefine']) ? array($options['dbDefine']) : array(); }
+      if ($this->ifOption('dbDefine') && !is_array($options['dbDefine'])) { $options['dbDefine'] = ($options['dbDefine']) ? array($options['dbDefine']) : array(); }
 
-      if ($this->settings['prepare.database']) { $this->prepareDatabase(); }
+      if ($this->ifSetting('prepare.database') && $this->settings['prepare.database']) { $this->prepareDatabase(); }
 
-      if ($this->settings['connect.database']) {
+      if ($this->ifSetting('connect.database') && $this->settings['connect.database']) {
          if (!$this->connectDatabase()) { $this->debug(0,"Could not establish connection to database"); exit; }
       }
 
@@ -536,9 +538,9 @@ class MainBase extends Base
     */
    public function buildClass($objName, $className, $options = null, $fileName = null)
    {
-      if (!$this->classList[$className] && !is_null($fileName)) { $this->includeClass($className,$fileName); }
+      if ($this->ifClass($className) && !$this->classList[$className] && !is_null($fileName)) { $this->includeClass($className,$fileName); }
 
-      if (!$this->autoLoad && !$this->classList[$className]) {
+      if (!$this->autoLoad && $this->ifClass($className) && !$this->classList[$className]) {
          $this->debug(9,"Could not load class for $className");
          return false;
       }
@@ -617,7 +619,7 @@ class MainBase extends Base
 
       $currentUsed = $this->classUsed();
 
-      if ($currentUsed[$className] == $fileName) { 
+      if (array_key_exists($className,$currentUsed) && $currentUsed[$className] == $fileName) { 
          $this->debug(9,"Class $className (in $fileName) already loaded.");
          return true; 
       }
@@ -722,20 +724,42 @@ class MainBase extends Base
     * obj - Returns single object from objects list
     *
     * @param  string $name Object name
-    * @return object|null Object
+    * @return ?object Object
     */
    public function obj($name) { 
-      return $this->objects[$name]; 
+      return ($this->ifObject($name)) ? $this->objects[$name] : null; 
    }
    
    /**
-    * ifOption - verify a specific option was set
-    *
-    * @param  string $name
-    * @return bool
-    */
-   private function ifOption($name)
+     * ifSetting - verify a specific setting was set
+     *
+     * @param  string $name
+     * @return bool
+     */
+   protected function ifSetting($name)
    {
-      return (array_key_exists($name,$this->options) ? true : false);
+      return (array_key_exists($name,$this->settings) ? true : false);
+   }
+
+   /**
+     * ifObject - verify a specific object was set
+     *
+     * @param  string $name
+     * @return bool
+     */
+   protected function ifObject($name)
+   {
+      return (array_key_exists($name,$this->objects) ? true : false);
+   }
+
+   /**
+     * ifClass - verify a specific class was set
+     *
+     * @param  string $name
+     * @return bool
+     */
+   protected function ifClass($name)
+   {
+      return (array_key_exists($name,$this->classList) ? true : false);
    }
 }
