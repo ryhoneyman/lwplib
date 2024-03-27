@@ -161,6 +161,8 @@ class MySQL extends Base
           return false;
        }
 
+       if (!is_array($data)) { $data = array($data); }
+
        $this->debug(9,"bindquery($statement) types($types) data(".json_encode($data).")");
 
        $stmt = mysqli_prepare($this->resource,$statement);
