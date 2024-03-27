@@ -22,6 +22,8 @@ class MySQL extends Base
     public function __construct($debug = null)
     {
         parent::__construct($debug);
+
+        mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
     }
 
     public function connect($hostname, $username, $password, $database, $persistent = false)
