@@ -324,31 +324,31 @@ class MainBase extends Base
       }
 
       // load defines.  we have to do this directly because no data providers are loaded yet.
-      if ($options['dbDefine']) {
-         $this->loadDefinesFromDB($options['dbDefine']);
+      if ($this->option('dbDefine')) {
+         $this->loadDefinesFromDB($this->option('dbDefine'));
       }
 
-      if ($options['request']) {
+      if ($this->option('request')) {
          if (!$this->buildClass('request','LWPLib\Request',null,'request.class.php')) { exit; }
       }
 
-      if ($options['input']) {
+      if ($this->option('input')) {
          if (!$this->buildClass('input','LWPLib\Input',null,'input.class.php')) { exit; }
       }
 
-      if ($options['html']) {
+      if ($this->option('html')) {
          if (!$this->buildClass('html','LWPLib\HTML',null,'html.class.php')) { exit; }
       }
 
-      if ($options['adminlte']) {
+      if ($this->option('adminlte')) {
          if (!$this->buildClass('adminlte','LWPLib\AdminLTE',null,'adminlte.class.php')) { exit; }
       }
 
-      if ($options['toastr']) {
+      if ($this->option('toastr')) {
          if (!$this->buildClass('toastr','LWPLib\Toastr',null,'toastr.class.php')) { exit; }
       }
 
-      if ($options['require']) {
+      if ($this->option('require')) {
          foreach ($options['require'] as $buildParams) {
             if (count($buildParams) < 4) { $this->debug(0,"Invalid paramters to buildClass: ".json_encode($buildParams)); continue; }
 
