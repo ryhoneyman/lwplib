@@ -134,20 +134,9 @@ class MySQL extends Base
 
     public function execute($statement)
     {
-        if (!$this->connected) {
-            $this->debug(1,"query requested, but database not connected");
-            return false;
-        }
+        $result = $this->executeQuery($statement);
 
-        $this->debug(9,"query($statement)");
-
-        $result = mysqli_query($this->resource,$statement);
-
-        if (!empty($result)) {
-            $queryrows = (preg_match('/^\s*select/i', $statement)) ? $this->numRows($result) : 0;
-            $this->queryRows($queryrows);
-            $this->totalQueries(1);
-        }
+        $this->freeResult($result);
 
         return $result;
     }
@@ -226,12 +215,10 @@ class MySQL extends Base
           $query = $param;
        }
 
-       $this->debug(9,"query($query)");
-
-       $result = $this->execute($query);
+       $result = $this->executeQuery($query);
 
        if (!$result) {
-           $this->debug(9,"no results, query($query)");
+           $this->debug(9,"no results");
            return $return;
        }
 
@@ -279,6 +266,26 @@ class MySQL extends Base
 
        return $return;
     }
+
+   public function executeQuery($statement)
+   { 
+      if (!$this->connected) {
+         $this->debug(1,"query requested, but database not connected");
+         return false;
+      }
+
+      $this->debug(9,"connected, query($statement)");
+
+      $result = mysqli_query($this->resource,$statement);
+
+      if (!empty($result)) {
+         $queryrows = (preg_match('/^\s*select/i', $statement)) ? $this->numRows($result) : 0;
+         $this->queryRows($queryrows);
+         $this->totalQueries(1);
+      }
+
+      return $result;
+   }
 
     public function fetchAssoc($result)
     {
