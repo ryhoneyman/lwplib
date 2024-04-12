@@ -482,7 +482,7 @@ class HTML extends Base
             $disabled     = (isset($keyopts['disabled'][$key])) ? true : false;
             $disabledText = ($disabled) ? $keyopts['disabled'][$key] : '';
 
-            $dataValues = $data[$key];
+            $dataValues = isset($data[$key]) ? $data[$key] : null;
             $dataList   = array();
 
             if ($dataValues) {
