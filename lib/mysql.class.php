@@ -24,7 +24,7 @@ class MySQL extends Base
     {
         parent::__construct($debug);
 
-        mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT);
+        mysqli_report(MYSQLI_REPORT_ALL ^ MYSQLI_REPORT_STRICT ^ MYSQLI_REPORT_INDEX);
     }
 
     public function connect($hostname, $username, $password, $database, $persistent = false)
@@ -301,7 +301,7 @@ class MySQL extends Base
     public function freeResult($result)
     {
         if (!$result instanceof mysqli_result) { return null; }
-        
+
         mysqli_free_result($result);
         return true;
     }
