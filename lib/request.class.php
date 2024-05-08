@@ -28,6 +28,12 @@ class Request extends Base
       $this->setServerVars($_SERVER);
    }
 
+   public function create(?array $parameters, ?array $filterData): void 
+   {
+      if ($parameters) { $this->parameters = $parameters; }
+      if ($filterData) { $this->filterData = $filterData; }
+   }
+
    public function setServerVars($vars)
    {
       $this->debug(7,'method called');
