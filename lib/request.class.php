@@ -19,10 +19,12 @@ class Request extends Base
    public $keyId;         // User key ID from client id/secret
    public $token;         // User request token for authentication
 
-   public function __construct($debug = null) 
+   public function __construct($debug = null, $options = null) 
    {
       parent::__construct($debug);
       $this->debug(5,'Request class instantiated');
+
+      if (isset($options['initBypass']) && $options['initBypass']) { return; }
 
       // use the default server variables, these can be overridden via method after constructor.
       $this->setServerVars($_SERVER);
