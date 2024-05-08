@@ -1,6 +1,7 @@
 <?php
 
 namespace LWPLib;
+use mysqli_result;
 
 include_once 'base.class.php';
 
@@ -299,6 +300,8 @@ class MySQL extends Base
 
     public function freeResult($result)
     {
+        if (!$result instanceof mysqli_result) { return null; }
+        
         mysqli_free_result($result);
         return true;
     }
