@@ -165,6 +165,8 @@ class MySQL extends Base
        $varRefs = array();
        foreach (array_keys($data) as $fieldPosition) { $varRefs[$fieldPosition] = &$data[$fieldPosition]; }
 
+       if (!$types) { $types = ''; }
+
        $bindResult = call_user_func_array(array($stmt,'bind_param'),array_merge(array($types),$varRefs));
 
        if ($bindResult === false) {
