@@ -151,6 +151,8 @@ class MySQL extends Base
           return false;
        }
 
+       if (!$types && !$data) { return $this->query($statement); }
+
        if (!is_array($data)) { $data = array($data); }
 
        $this->debug(9,"bindquery($statement) types($types) data(".json_encode($data).")");
