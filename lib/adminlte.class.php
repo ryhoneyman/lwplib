@@ -87,8 +87,10 @@ class AdminLTE extends Base
 
       return "<div class='$containerClass'>\n".
              "    <div id='$cardId' class='card $cardClass'>\n".
-             "       <div class='card-header $headerClass'><h3 class='card-title text-bold'>$cardTitle</h3></div>\n".
-             (($cardTools) ? "       <div class='card-tools'>$cardTools</div>" : '').
+             "       <div class='card-header $headerClass'>\n". 
+             "          <div class='card-title text-bold'>$cardTitle</div>\n".
+             (($cardTools) ? "          <div class='card-tools'>$cardTools</div>" : '').
+             "       </div>\n".
              "       <div class='card-body'>\n".
              "       ".$content."\n".
              "       </div>\n".
