@@ -78,6 +78,7 @@ class AdminLTE extends Base
    {
       $containerClass = $cardProps['container'] ?: 'col-12 col-xl-3 col-lg-6 col-md-6 col-sm-12';
       $cardClass      = $cardProps['card'] ?: 'card-primary';
+      $cardTools      = $cardProps['tools'] ?: '';
       $headerClass    = $cardProps['header'] ?: '';
       $cardTitle      = $cardProps['title'] ?: '';
       $cardId         = $cardProps['id'] ?: 'card';
@@ -87,6 +88,7 @@ class AdminLTE extends Base
       return "<div class='$containerClass'>\n".
              "    <div id='$cardId' class='card $cardClass'>\n".
              "       <div class='card-header $headerClass'><h3 class='card-title text-bold'>$cardTitle</h3></div>\n".
+             (($cardTools) ? "       <div class='card-tools'>$cardTools</div>" : '').
              "       <div class='card-body'>\n".
              "       ".$content."\n".
              "       </div>\n".
