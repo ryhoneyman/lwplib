@@ -55,7 +55,7 @@ class Format extends Base
       if (!$time || $time < 0) { return (($short) ? '0s' : '0 seconds'); }
    
       foreach ($durations as $timeframe => $increment) {
-         $test  = $time / $increment;
+         $test  = (float)sprintf("%1.1f",$time / $increment);
          $floor = floor($test);
    
          if ($floor > 0) {
