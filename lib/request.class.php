@@ -65,11 +65,11 @@ class Request extends Base
       $this->method = strtoupper($this->serverVars['REQUEST_METHOD']);
    }
 
-   public function getPath()
+   public function getApiPath()
    {
       $this->debug(7,'method called');
 
-      $this->pathInfo   = $this->serverVars['PATH_INFO'];
+      $this->pathInfo   = preg_replace('~^/api~i','',$this->serverVars['PATH_INFO']);
       $this->pathList   = explode('/',trim($this->pathInfo,'/'));
       $this->apiVersion = array_shift($this->pathList);
       $this->path       = '/'.implode('/',$this->pathList);
