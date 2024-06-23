@@ -47,7 +47,7 @@ class Request extends Base
  
       $this->getProtocol();
       $this->getMethod();
-      $this->getPath();
+      $this->getApiPath();
       $this->getParameters();
    }
 
