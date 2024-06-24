@@ -105,11 +105,11 @@ class Request extends Base
 
          if (preg_match('/^token\s+token=(.*)/i',$this->serverVars['HTTP_AUTHORIZATION'],$match)) {
             $this->token = trim($match[1],'"');
-            $this->debug(9,'HTTP_AUTHORIZATION token detected: '.$this->token);
+            $this->debug(9,'HTTP_AUTHORIZATION token detected');
          } 
          else if (preg_match('/^bearer\s+(.*)/i',$this->serverVars['HTTP_AUTHORIZATION'],$match)) {
             $this->token = $match[1];
-            $this->debug(9,'HTTP_AUTHORIZATION bearer detected: '.$this->token);
+            $this->debug(9,'HTTP_AUTHORIZATION bearer detected');
          }
       }
 
