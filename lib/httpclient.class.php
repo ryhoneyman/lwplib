@@ -208,7 +208,7 @@ class HttpClient extends Base
          foreach ($headers as $headerKey => $headerValue) {
             $httpHeaders[] = "$headerKey: $headerValue";
 
-            if (preg_match('/z(authorization|authentication)/i',$headerKey)) { $headerValue = '*****'; }
+            if (preg_match('/(authorization|authentication)/i',$headerKey)) { $headerValue = '*****'; }
 
             $this->debug(9,"Header> $headerKey: $headerValue");
          }
@@ -248,7 +248,6 @@ class HttpClient extends Base
       if ($decode) {
          $this->debug(9,"decode $decode requested");
          if (preg_match('/json/i',$decode)) { $this->responseBody = json_decode($result,true); }
-         $this->debug(9,"result: ".json_encode($result).", responseBody: ".json_encode($this->responseBody));
       }
       else { $this->responseBody = $result; }
 
