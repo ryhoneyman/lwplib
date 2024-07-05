@@ -41,7 +41,7 @@ class Format extends Base
       $pieces = array();
    
       $limiter    = $options['limiter'] ?: null;
-      $fractional = ($options['fractional']) ?: null;
+      $fractional = ($options['fractional']) ? (($options['fractional'] === true) ? "%1.1f" : $options['fractional']) : null;
       $short      = ($options['short']) ? 1 : 0;
    
       $durations = array(
@@ -57,7 +57,7 @@ class Format extends Base
    
       foreach ($durations as $timeframe => $increment) {
          $test  = (float)sprintf("%1.6f",$time / $increment);
-         $floor = ($timeframe == 'second' && $fractional) ? sprintf("%1.1f",$test) : floor($test);
+         $floor = ($timeframe == 'second' && $fractional) ? sprintf($fractional,$test) : floor($test);
    
          if ($floor > 0) {
             $label = ($short) ? substr($timeframe,0,1) :
