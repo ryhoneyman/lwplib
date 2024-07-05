@@ -40,8 +40,9 @@ class Format extends Base
       $return = "";
       $pieces = array();
    
-      $limiter = ($options['limiter']) ? $options['limiter'] : null;
-      $short   = ($options['short']) ? 1 : 0;
+      $limiter    = $options['limiter'] ?: null;
+      $fractional = ($options['fractional']) ?: null;
+      $short      = ($options['short']) ? 1 : 0;
    
       $durations = array(
          'year'   => 31536000,
@@ -56,7 +57,7 @@ class Format extends Base
    
       foreach ($durations as $timeframe => $increment) {
          $test  = (float)sprintf("%1.6f",$time / $increment);
-         $floor = floor($test);
+         $floor = ($timeframe == 'second' && $fractional) ? sprintf("%1.1f",$test) : floor($test);
    
          if ($floor > 0) {
             $label = ($short) ? substr($timeframe,0,1) :
