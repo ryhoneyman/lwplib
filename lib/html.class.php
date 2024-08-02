@@ -137,6 +137,9 @@ class HTML extends Base
             'aaSorting'      => '[]',
             'iDisplayLength' => 10,
             'aLengthMenu'    => '[[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]]',
+            'responsive' => 'true', 
+            'lengthChange' => 'false', 
+            'autoWidth' => 'true',
          );
 
          if ($options['datatable.ajax']) {
