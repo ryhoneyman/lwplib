@@ -242,7 +242,7 @@ class MySQL extends Base
 
        $this->debug(9,json_encode(array('autoindex' => $autoindex, 'index' => $index, 'single' => $single, 'serialize' => $serial, 'callback' => $callback),JSON_UNESCAPED_SLASHES));
 
-       $indexCount = 0;
+       $indexCount = 1;
        
        if (!$single) {
           while ($rec = $this->fetchAssoc($result)) {
