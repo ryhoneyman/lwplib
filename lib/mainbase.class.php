@@ -36,22 +36,23 @@ include_once 'debug.class.php';
  */
 class MainBase extends Base
 {
-   protected $version     = 1.0;
-   public    $debug       = null;
-   public    $settings    = array();
-   public    $objects     = array();
-   public    $classList   = array();
-   public    $now         = null;
-   public    $startMs     = null;
-   public    $pid         = null;
-   public    $hostname    = null;
-   public    $userName    = null;
-   public    $userInfo    = array();
-   public    $pageUri     = null;
-   public    $autoLoad    = false;
-   public    $dbConfigDir = null;
-   public    $cliApp      = null;
-   public    $webApp      = null;
+   protected $version      = 1.0;
+   public    $debug        = null;
+   public    $settings     = array();
+   public    $objects      = array();
+   public    $classList    = array();
+   public    $now          = null;
+   public    $startMs      = null;
+   public    $pid          = null;
+   public    $hostname     = null;
+   public    $userName     = null;
+   public    $userInfo     = array();
+   public    $pageUri      = null;
+   public    $autoLoad     = false;
+   public    $dbConfigDir  = null;
+   public    $dbConfigFile = null;
+   public    $cliApp       = null;
+   public    $webApp       = null;
    
    /**
     * __construct - Creates the class object
@@ -107,9 +108,10 @@ class MainBase extends Base
          'db.name' => 'default',
       );
 
-      if ($this->ifOption('memoryLimit')) { $this->setMemoryLimit($options['memoryLimit']); }
-      if ($this->ifOption('autoLoad'))    { $this->autoLoad($options['autoLoad']); }
-      if ($this->ifOption('dbConfigDir')) { $this->setDatabaseConfigDir($options['dbConfigDir']); }
+      if ($this->ifOption('memoryLimit'))  { $this->setMemoryLimit($options['memoryLimit']); }
+      if ($this->ifOption('autoLoad'))     { $this->autoLoad($options['autoLoad']); }
+      if ($this->ifOption('dbConfigDir'))  { $this->setDatabaseConfigDir($options['dbConfigDir']); }
+      if ($this->ifOption('dbConfigFile')) { $this->setDatabaseConfigFile($options['dbConfigFile']); }
 
       // Class initialization
       $this->initialize($options);
@@ -448,7 +450,7 @@ class MainBase extends Base
       if (is_null($name))         { $name         = $this->settings['defaults']['db.name']; }
       if (is_null($className))    { $className    = 'LWPLib\MySQL'; }
       if (is_null($fileName))     { $fileName     = 'mysql.class.php'; }
-      if (is_null($dbConfigFile)) { $dbConfigFile = 'db.conf'; }
+      if (is_null($dbConfigFile)) { $dbConfigFile = $this->dbConfigFile ?: 'db.conf'; }
 
       if (is_a($this->db($name),$className) && $this->db($name)->isConnected()) { return true; }
 
@@ -571,6 +573,19 @@ class MainBase extends Base
 
       return true;
    }
+
+   /**
+    * setDatabaseConfigFile
+    *
+    * @param  string|null $configFile
+    * @return bool
+    */
+    public function setDatabaseConfigFile($configFile = null)
+    {
+       if (!is_null($configFile)) { $this->dbConfigFile = $configFile; }
+ 
+       return true;
+    }
    
    /**
     * autoLoad - Class Autoloader 
