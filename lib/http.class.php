@@ -23,6 +23,7 @@ class HTTP extends Base
    public function serverProtocol() { return (array_key_exists('SERVER_PROTOCOL',$_SERVER)) ? $_SERVER['SERVER_PROTOCOL'] : null; }
    public function sslProtocol()    { return (array_key_exists('SSL_PROTOCOL',$_SERVER)) ? $_SERVER['SSL_PROTOCOL'] : null; }
    public function sslCipher()      { return (array_key_exists('SSL_CIPHER',$_SERVER)) ? $_SERVER['SSL_CIPHER'] : null; }
+   public function requestUri()     { return (array_key_exists('REQUEST_URI',$_SERVER)) ? $_SERVER['REQUEST_URI'] : null; }
 
    public function userAgent() { return $this->requestHeaders('USER-AGENT'); }
 
