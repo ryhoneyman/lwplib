@@ -288,7 +288,7 @@ class HttpClient extends Base
 
    public function response($type = null)
    {
-      if (preg_match('/^full$/i',$type)) {
+      if (preg_match('/^full$/i',$type ?: '')) {
          return array('code' => $this->responseCode, 'requestHeaders' => $this->requestHeaders, 'responseHeaders' => $this->responseHeaders,
                       'result' => $this->responseBody, 'info' => $this->responseInfo);
       }
