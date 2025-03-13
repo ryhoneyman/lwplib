@@ -7,284 +7,286 @@ include_once 'http.class.php';
 
 class RESTAPI extends Base
 {
-   protected $version      = 1.0;
-   public    $apiKeys      = [];
-   public    $keyId        = null;
-   public    $responseCode = null;
-   public    $headers      = [];
-   private   $http         = null;
-   private   $loadTime     = null;
+    protected $version      = 1.0;
+    public    $apiKeys      = [];
+    public    $keyId        = null;
+    public    $responseCode = null;
+    public    $headers      = [];
+    private   $http         = null;
+    private   $loadTime     = null;
 
-   //===================================================================================================
-   // Description: Creates the class object
-   // Input: object(debug), Debug object created from debug.class.php
-   // Input: array(options), List of options to set in the class
-   // Output: null()
-   //===================================================================================================
-   public function __construct($debug = null, $options = null)
-   {
-      $this->loadTime = hrtime(true);
+    //===================================================================================================
+    // Description: Creates the class object
+    // Input: object(debug), Debug object created from debug.class.php
+    // Input: array(options), List of options to set in the class
+    // Output: null()
+    //===================================================================================================
+    public function __construct($debug = null, $options = null)
+    {
+        $this->loadTime = hrtime(true);
 
-      parent::__construct($debug,$options);
+        parent::__construct($debug,$options);
 
-      if (isset($options['apiKeys'])) { $this->loadApiKeys($options['apiKeys']); }
+        if (isset($options['apiKeys'])) { $this->loadApiKeys($options['apiKeys']); }
 
-      $this->http = new HTTP($debug);
+        $this->http = new HTTP($debug);
 
-      $this->responseCode = 200;
-      $this->keyId        = 'UNAUTHORIZED';
-   }
+        $this->responseCode = 200;
+        $this->keyId        = 'UNAUTHORIZED';
+    }
 
-   public function router($parameters, $routeList)
-   {
-      if (!is_array($routeList)) { $this->sendResponse(null,null,500); }
+    public function router($parameters, $routeList)
+    {
+        $this->debug(8,"called");
 
-      foreach ($routeList as $route => $routeInfo) {
-         if ($this->matchRoute($route)) {
-            $routeCallback = $routeInfo['function'];
-            $routeMethods  = $routeInfo['method'];
+        if (!is_array($routeList)) { $this->sendResponse(null,null,500); }
 
-            if (!is_callable($routeCallback))          { $this->sendResponse(null,null,500); }
-            if (!$this->validateMethod($routeMethods)) { $this->sendResponse(null,null,405); }
+        foreach ($routeList as $route => $routeInfo) {
+            if ($this->matchRoute($route)) {
+                $routeCallback = $routeInfo['function'];
+                $routeMethods  = $routeInfo['method'];
 
-            call_user_func($routeCallback,$parameters);
-         }
-      }
-   }
+                if (!is_callable($routeCallback))          { $this->sendResponse(null,null,500); }
+                if (!$this->validateMethod($routeMethods)) { $this->sendResponse(null,null,405); }
 
-   public function matchRoute($route)
-   {
-      return ((preg_match("~^$route~i",$_SERVER['REQUEST_URI'])) ? true : false);
-   }
+                call_user_func($routeCallback,$parameters);
+            }
+        }
+    }
 
-   public function sendResponse($output = null, $headers = null, $responseCode = null, $outputEncoding = null)
-   {
-      // send response code header
-      $this->sendHeaders($this->formatResponseCode($responseCode));
+    public function matchRoute($route)
+    {
+        return ((preg_match("~^$route~i",$_SERVER['REQUEST_URI'])) ? true : false);
+    }
 
-      // send any additional headers, if they are set
-      $headers = (is_null($headers)) ? $this->headers : $headers;
+    public function sendResponse($output = null, $headers = null, $responseCode = null, $outputEncoding = null)
+    {
+        // send response code header
+        $this->sendHeaders($this->formatResponseCode($responseCode));
 
-      if ($headers) { $this->sendHeaders($headers); }
+        // send any additional headers, if they are set
+        $headers = (is_null($headers)) ? $this->headers : $headers;
 
-      // send response output
-      print $this->formatOutput($output,$outputEncoding);
+        if ($headers) { $this->sendHeaders($headers); }
 
-      // no further output should occur after response sent
-      exit;
-   }
+        // send response output
+        print $this->formatOutput($output,$outputEncoding);
 
-   public function formatResponseCode($code = null, $message = null)
-   {
-      $protocol     = ($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0';
-      $responseCode = (is_null($code)) ? $this->responseCode : $code;
+        // no further output should occur after response sent
+        exit;
+    }
 
-      return "$protocol $responseCode".((!is_null($message)) ? " $message": '');
-   }
+    public function formatResponseCode($code = null, $message = null)
+    {
+        $protocol     = ($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0';
+        $responseCode = (is_null($code)) ? $this->responseCode : $code;
 
-   public function sendHeaders($headers = null)
-   {
-      if (is_null($headers)) { return null; }
+        return "$protocol $responseCode".((!is_null($message)) ? " $message": '');
+    }
 
-      if (!is_array($headers)) { $headers = array($headers); }
+    public function sendHeaders($headers = null)
+    {
+        if (is_null($headers)) { return null; }
 
-      foreach ($headers as $header) { header($header); }
-   }
+        if (!is_array($headers)) { $headers = array($headers); }
 
-   public function formatOutput($output = null, $encoding = null)
-   {
-      $return = '';
+        foreach ($headers as $header) { header($header); }
+    }
 
-      if (is_null($encoding)) { $encoding = 'json'; }
+    public function formatOutput($output = null, $encoding = null)
+    {
+        $return = '';
 
-      if (preg_match('/^json$/i',$encoding)) { $return = json_encode($output); }
-      else if (!is_null($output)) { $return = $output; }
+        if (is_null($encoding)) { $encoding = 'json'; }
 
-      return $return;
-   }
+        if (preg_match('/^json$/i',$encoding)) { $return = json_encode($output); }
+        else if (!is_null($output)) { $return = $output; }
 
-   public function standardMulti($info = null, $responseCode = null)
-   {
-      if (is_null($responseCode)) { $responseCode = 207; }
+        return $return;
+    }
 
-      return $this->standardStatus('multi',$info,$responseCode);
-   }
+    public function standardMulti($info = null, $responseCode = null)
+    {
+        if (is_null($responseCode)) { $responseCode = 207; }
 
-   public function standardOk($info = null, $responseCode = null)
-   {
-      return $this->standardStatus('ok',$info,$responseCode);
-   }
+        return $this->standardStatus('multi',$info,$responseCode);
+    }
 
-   public function standardStatus($status, $info = null, $responseCode = null)
-   {
-      $return = array('status' => $status);
+    public function standardOk($info = null, $responseCode = null)
+    {
+        return $this->standardStatus('ok',$info,$responseCode);
+    }
 
-      // Log before appending the info, because we don't want the output in the log - just the status
-      $this->logResponse(json_encode($return));
+    public function standardStatus($status, $info = null, $responseCode = null)
+    {
+        $return = array('status' => $status);
 
-      if (is_array($info)) { $return = array_merge($return,$info); }
+        // Log before appending the info, because we don't want the output in the log - just the status
+        $this->logResponse(json_encode($return));
 
-      if (!is_null($responseCode)) { $this->responseCode = $responseCode; }
+        if (is_array($info)) { $return = array_merge($return,$info); }
 
-      return $return;
-   }
+        if (!is_null($responseCode)) { $this->responseCode = $responseCode; }
 
-   public function standardError($error = null, $responseCode = null)
-   {
-      $return = array('status' => 'error', 'error' => $error);
+        return $return;
+    }
 
-      $this->logResponse(json_encode($return));
+    public function standardError($error = null, $responseCode = null)
+    {
+        $return = array('status' => 'error', 'error' => $error);
 
-      if (!is_null($responseCode)) { $this->responseCode = $responseCode; }
+        $this->logResponse(json_encode($return));
 
-      return $return;
-   }
+        if (!is_null($responseCode)) { $this->responseCode = $responseCode; }
 
-   public function standardErrorUnauthorized() 
-   {
-      return $this->standardError('Unauthorized',401);
-   }
+        return $return;
+    }
 
-   public function standardErrorUnsupportedMethod()
-   {
-      return $this->standardError('Unsupported method',405);
-   }
+    public function standardErrorUnauthorized() 
+    {
+        return $this->standardError('Unauthorized',401);
+    }
 
-   public function validate($keyList = null, $methodList = null)
-   {
-      if (!$keyList || empty($keyList)) { 
-         $this->sendResponse($this->standardError('Service Unavailable',503));
-      }
+    public function standardErrorUnsupportedMethod()
+    {
+        return $this->standardError('Unsupported method',405);
+    }
 
-      if ($this->validateAuthentication($this->allowKeys($keyList)) === false) {
-         $this->sendResponse($this->standardErrorUnauthorized());
-      }
+    public function validate($keyList = null, $methodList = null)
+    {
+        if (!$keyList || empty($keyList)) { 
+            $this->sendResponse($this->standardError('Service Unavailable',503));
+        }
 
-      if ($this->validateMethod($methodList) === false) {
-         $this->sendResponse($this->standardErrorUnsupportedMethod());
-      }
+        if ($this->validateAuthentication($this->allowKeys($keyList)) === false) {
+            $this->sendResponse($this->standardErrorUnauthorized());
+        }
 
-      return true;
-   }
+        if ($this->validateMethod($methodList) === false) {
+            $this->sendResponse($this->standardErrorUnsupportedMethod());
+        }
 
-   public function validateMethod($methodList = null)
-   {
-      if (!is_array($methodList)) { return true; }
+        return true;
+    }
 
-      $method = strtoupper($this->httpMethod());
+    public function validateMethod($methodList = null)
+    {
+        if (!is_array($methodList)) { return true; }
 
-      return ((preg_grep("~$method~i",$methodList)) ? true : false);
-   }
+        $method = strtoupper($this->httpMethod());
 
-   public function validateAuthentication($keyList = null) 
-   {
-      if (is_null($keyList)) { return null; }
+        return ((preg_grep("~$method~i",$methodList)) ? true : false);
+    }
 
-      $findKey = $this->getAuthentication(in_array('SESSION',array_values($keyList)));
-      $apiAuth = ($keyList[$findKey]) ? $findKey : null;
-      $valid   = (is_null($apiAuth)) ? false : true;
+    public function validateAuthentication($keyList = null) 
+    {
+        if (is_null($keyList)) { return null; }
 
-      if ($valid !== false) {
-         // If our key was based on session, append username to value
-         if (preg_match('/^session$/i',$keyList[$apiAuth])) { $this->keyId = $keyList[$apiAuth].'/'.$apiAuth; }
-         // If our key came from an API key, prepend key identifier
-         else { $this->keyId = 'KEY/'.$keyList[$apiAuth]; }
-      } 
+        $findKey = $this->getAuthentication(in_array('SESSION',array_values($keyList)));
+        $apiAuth = ($keyList[$findKey]) ? $findKey : null;
+        $valid   = (is_null($apiAuth)) ? false : true;
 
-      $this->logDebugAuth(sprintf("validateAuthentication - keyLength:%d, valid:%d, keyId:%s",strlen($findKey),$valid,$this->keyId));
+        if ($valid !== false) {
+            // If our key was based on session, append username to value
+            if (preg_match('/^session$/i',$keyList[$apiAuth])) { $this->keyId = $keyList[$apiAuth].'/'.$apiAuth; }
+            // If our key came from an API key, prepend key identifier
+            else { $this->keyId = 'KEY/'.$keyList[$apiAuth]; }
+        } 
 
-      $this->logRequest();
+        $this->logDebugAuth(sprintf("validateAuthentication - keyLength:%d, valid:%d, keyId:%s",strlen($findKey),$valid,$this->keyId));
 
-      return $valid;
-   }
+        $this->logRequest();
 
-   public function getAuthentication($useSession = false)
-   {
-      $key = null;
-   
-      if ($_SERVER['HTTP_X_APIKEY']) {
-         $key = $_SERVER['HTTP_X_APIKEY'];
-      }
-      else if ($_SERVER['HTTP_AUTHORIZATION']) {
-         // Strip Bearer or Token off the authorization header
-         $key = preg_replace('/^\S+\s+/','',$_SERVER['HTTP_AUTHORIZATION']);
-      }
-      else {
-         $headers = array_change_key_case(apache_request_headers(),CASE_LOWER);
+        return $valid;
+    }
 
-         // Log all headers except the authorization header
-         $this->logDebugHeaders(json_encode(array_diff_key($headers,array('authorization' => true))));
+    public function getAuthentication($useSession = false)
+    {
+        $key = null;
+    
+        if ($_SERVER['HTTP_X_APIKEY']) {
+            $key = $_SERVER['HTTP_X_APIKEY'];
+        }
+        else if ($_SERVER['HTTP_AUTHORIZATION']) {
+            // Strip Bearer or Token off the authorization header
+            $key = preg_replace('/^\S+\s+/','',$_SERVER['HTTP_AUTHORIZATION']);
+        }
+        else {
+            $headers = array_change_key_case(apache_request_headers(),CASE_LOWER);
 
-         if (in_array('authorization',array_keys($headers))) { $key = preg_replace('/^\S+\s+/','',$headers['authorization']); }
-      }
+            // Log all headers except the authorization header
+            $this->logDebugHeaders(json_encode(array_diff_key($headers,array('authorization' => true))));
 
-      // If we are allowing user authenticated sessions and we didn't find an API key, set the key to the session username
-      if ($useSession && is_null($key) && $_SESSION['username']) { $key = $_SESSION['username']; }
+            if (in_array('authorization',array_keys($headers))) { $key = preg_replace('/^\S+\s+/','',$headers['authorization']); }
+        }
 
-      $this->logDebugAuth(sprintf("getAuthentication - useSession:%d, keyProvided:%d",$useSession,!is_null($key)));
+        // If we are allowing user authenticated sessions and we didn't find an API key, set the key to the session username
+        if ($useSession && is_null($key) && $_SESSION['username']) { $key = $_SESSION['username']; }
 
-      return $key;
-   }
+        $this->logDebugAuth(sprintf("getAuthentication - useSession:%d, keyProvided:%d",$useSession,!is_null($key)));
 
-   public function matchMethod($method)
-   {
-      return (preg_match("~^$method$~i",$this->httpMethod())) ? true : false;
-   }
+        return $key;
+    }
 
-   public function httpMethod()     { return $this->http->httpMethod(); }
-   public function serverProtocol() { return $this->http->serverProtocol(); }
-   public function sslProtocol()    { return $this->http->sslProtocol(); }
-   public function sslCipher()      { return $this->http->sslCipher(); }
-   public function requestUri()     { return $this->http->requestUri(); }
-   public function userAgent()      { return $this->requestHeaders('USER-AGENT'); }
+    public function matchMethod($method)
+    {
+        return (preg_match("~^$method$~i",$this->httpMethod())) ? true : false;
+    }
 
-   public function requestHeaders($header = null) { return $this->http->requestHeaders($header); }
+    public function httpMethod()     { return $this->http->httpMethod(); }
+    public function serverProtocol() { return $this->http->serverProtocol(); }
+    public function sslProtocol()    { return $this->http->sslProtocol(); }
+    public function sslCipher()      { return $this->http->sslCipher(); }
+    public function requestUri()     { return $this->http->requestUri(); }
+    public function userAgent()      { return $this->requestHeaders('USER-AGENT'); }
 
-   public function allowKeys($lookup)
-   {
-      if (!is_array($lookup)) { $lookup = explode(',',$lookup); }
+    public function requestHeaders($header = null) { return $this->http->requestHeaders($header); }
 
-      return array_filter(array_flip(array_intersect_key($this->apiKeys,array_flip($lookup))));
-   }
+    public function allowKeys($lookup)
+    {
+        if (!is_array($lookup)) { $lookup = explode(',',$lookup); }
 
-   private function loadApiKeys($apiKeysJson)
-   {
-      $this->apiKeys = json_decode($apiKeysJson,true);
-   }
+        return array_filter(array_flip(array_intersect_key($this->apiKeys,array_flip($lookup))));
+    }
 
-   private function logRequest()
-   {
-      $this->logUser(APP_LOGDIR.'/api/api.request.log');
-   }
+    private function loadApiKeys($apiKeysJson)
+    {
+        $this->apiKeys = json_decode($apiKeysJson,true);
+    }
 
-   private function logResponse($message)
-   {
-      $this->logUser(APP_LOGDIR.'/api/api.response.log',$message);
-   }
+    private function logRequest()
+    {
+        $this->logUser(APP_LOGDIR.'/api/api.request.log');
+    }
 
-   private function logDebugAuth($message)
-   {
-      $this->logBase(APP_LOGDIR.'/api/api.auth.debug.log',$message);
-   }
+    private function logResponse($message)
+    {
+        $this->logUser(APP_LOGDIR.'/api/api.response.log',$message);
+    }
 
-   private function logDebugHeaders($message)
-   {
-      $this->logBase(APP_LOGDIR.'/api/api.headers.debug.log',$message);
-   }
+    private function logDebugAuth($message)
+    {
+        $this->logBase(APP_LOGDIR.'/api/api.auth.debug.log',$message);
+    }
 
-   private function logUser($file, $message = null)
-   {
-      $fullMessage = sprintf("%d (%s) %s",$_SERVER['CONTENT_LENGTH'],$this->keyId,$message);
+    private function logDebugHeaders($message)
+    {
+        $this->logBase(APP_LOGDIR.'/api/api.headers.debug.log',$message);
+    }
 
-      $this->logBase($file,$fullMessage);
-   }
+    private function logUser($file, $message = null)
+    {
+        $fullMessage = sprintf("%d (%s) %s",$_SERVER['CONTENT_LENGTH'],$this->keyId,$message);
 
-   private function logBase($file, $message = null)
-   {
-      $totalTime = hrtime(true) - $this->loadTime;
-      $request   = sprintf("[%s] (%s) %15s %6s %s %s\n",date('Y-m-d H:i:s'),sprintf("%03.4fs",$totalTime/1e+9),
-                           $_SERVER['REMOTE_ADDR'],$this->httpMethod(),$_SERVER['REQUEST_URI'],$message);
+        $this->logBase($file,$fullMessage);
+    }
 
-      @file_put_contents($file,$request,FILE_APPEND|LOCK_EX);
-   }
+    private function logBase($file, $message = null)
+    {
+        $totalTime = hrtime(true) - $this->loadTime;
+        $request   = sprintf("[%s] (%s) %15s %6s %s %s\n",date('Y-m-d H:i:s'),sprintf("%03.4fs",$totalTime/1e+9),
+                            $_SERVER['REMOTE_ADDR'],$this->httpMethod(),$_SERVER['REQUEST_URI'],$message);
+
+        @file_put_contents($file,$request,FILE_APPEND|LOCK_EX);
+    }
 }
