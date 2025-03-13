@@ -235,6 +235,7 @@ class RESTAPI extends Base
    public function serverProtocol() { return $this->http->serverProtocol(); }
    public function sslProtocol()    { return $this->http->sslProtocol(); }
    public function sslCipher()      { return $this->http->sslCipher(); }
+   public function requestUri()     { return $this->http->requestUri(); }
    public function userAgent()      { return $this->requestHeaders('USER-AGENT'); }
 
    public function requestHeaders($header = null) { return $this->http->requestHeaders($header); }
