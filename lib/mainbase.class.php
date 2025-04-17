@@ -53,6 +53,7 @@ class MainBase extends Base
    public    $dbConfigFile = null;
    public    $cliApp       = null;
    public    $webApp       = null;
+   public    $cliOpts      = null;
    
    /**
     * __construct - Creates the class object
@@ -74,7 +75,7 @@ class MainBase extends Base
 
       if ($this->ifOption('fileDefine') && is_file($options['fileDefine'])) { $this->loadDefinesFromFile($options['fileDefine']); }
       
-      // Database control, whether we just prepare or keep a fully connection established when we're done initializing
+      // Database control, whether we just prepare or keep a full connection established when we're done initializing
       // Leaving the database disconnected until, and if, required can save resources
       if ($this->ifOption('database') && ($options['database'] === true || preg_match('/^connect$/i',$options['database']))) { $this->settings['connect.database'] = true; }
       else if (preg_match('/^prepare$/i',$options['database'])) { $this->settings['prepare.database'] = true; }
@@ -112,6 +113,9 @@ class MainBase extends Base
       if ($this->ifOption('autoLoad'))     { $this->autoLoad($options['autoLoad']); }
       if ($this->ifOption('dbConfigDir'))  { $this->setDatabaseConfigDir($options['dbConfigDir']); }
       if ($this->ifOption('dbConfigFile')) { $this->setDatabaseConfigFile($options['dbConfigFile']); }
+
+      if ($this->ifOption('cliShortOpts')) { $this->setCliOptions('short',$options['cliShortOpts']); }
+      if ($this->ifOption('cliLongOpts'))  { $this->setCliOptions('long',$options['cliLongOpts']); }
 
       // Class initialization
       $this->initialize($options);
@@ -356,6 +360,11 @@ class MainBase extends Base
          if (!$this->buildClass('toastr','LWPLib\Toastr',null,'toastr.class.php')) { exit; }
       }
 
+      if ($this->cliApp && $this->cliOpts) {
+         if (!$this->buildClass('options','LWPLib\Options',null,'options.class.php')) { exit; }
+         $this->obj('options')->parseOptions($this->cliOpts['short'] ?? null,$this->cliOpts['long'] ?? null);
+      }
+
       if ($this->option('require')) {
          foreach ($options['require'] as $buildParams) {
             if (count($buildParams) < 4) { $this->debug(0,"Invalid paramters to buildClass: ".json_encode($buildParams)); continue; }
@@ -586,6 +595,20 @@ class MainBase extends Base
  
        return true;
     }
+
+   /**
+    * setCliOptions
+    *
+    * @param  string $type CLI options type
+    * @param  string $options CLI options
+    * @return bool
+    */
+    public function setCliOptions($type, $options)
+    {
+       if ($options) { $this->cliOpts[$type] = $options; }
+ 
+       return true;
+    } 
    
    /**
     * autoLoad - Class Autoloader 
