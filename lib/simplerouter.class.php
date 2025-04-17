@@ -5,19 +5,23 @@ namespace LWPLib;
 include_once 'base.class.php';
 include_once 'http.class.php';
 
+/**
+ * SimpleRouter
+ */
 class SimpleRouter extends Base
 {
     protected $version      = 1.0;
     public    $responseCode = null;
     public    $headers      = [];
     public    $http         = null;
-
-    //===================================================================================================
-    // Description: Creates the class object
-    // Input: object(debug), Debug object created from debug.class.php
-    // Input: array(options), List of options to set in the class
-    // Output: null()
-    //===================================================================================================
+    
+    /**
+     * __construct
+     *
+     * @param  Debug|null $debug Debug object
+     * @param  array|null $options Class control options
+     * @return void
+     */
     public function __construct($debug = null, $options = null)
     {
         parent::__construct($debug,$options);
@@ -26,7 +30,14 @@ class SimpleRouter extends Base
 
         $this->responseCode = 200;
     }
-
+    
+    /**
+     * process
+     *
+     * @param  array $parameters Parameters passed to the route
+     * @param  array $routeList List of routes to process
+     * @return void
+     */
     public function process($parameters, $routeList)
     {
         $this->debug(8,"called");
@@ -45,12 +56,27 @@ class SimpleRouter extends Base
             }
         }
     }
-
+    
+    /**
+     * matchRoute
+     *
+     * @param  string $route Route to match
+     * @return bool True if the route matches the request URI
+     */
     public function matchRoute($route)
     {
         return ((preg_match("~^$route~i",$this->http->requestUri())) ? true : false);
     }
-
+    
+    /**
+     * sendResponse
+     *
+     * @param  string|null $output Output to send
+     * @param  array|string|null $headers Headers to send
+     * @param  int|null $responseCode Response code to send
+     * @param  string|null $outputEncoding Encoding for the output
+     * @return void
+     */
     public function sendResponse($output = null, $headers = null, $responseCode = null, $outputEncoding = null)
     {
         // send response code header
@@ -67,7 +93,14 @@ class SimpleRouter extends Base
         // no further output should occur after response sent
         exit;
     }
-
+    
+    /**
+     * formatResponseCode
+     *
+     * @param  int|null $code Response code to send
+     * @param  string|null $message Message to send with the response code
+     * @return string Formatted response code
+     */
     public function formatResponseCode($code = null, $message = null)
     {
         $protocol     = ($this->http->serverProtocol()) ? $this->http->serverProtocol() : 'HTTP/1.0';
@@ -75,7 +108,13 @@ class SimpleRouter extends Base
 
         return "$protocol $responseCode".((!is_null($message)) ? " $message": '');
     }
-
+    
+    /**
+     * sendHeaders
+     *
+     * @param  array|string|null $headers Headers to send
+     * @return void
+     */
     public function sendHeaders($headers = null)
     {
         if (is_null($headers)) { return null; }
@@ -84,7 +123,14 @@ class SimpleRouter extends Base
 
         foreach ($headers as $header) { header($header); }
     }
-
+    
+    /**
+     * formatOutput
+     *
+     * @param  string|null $output Output to format
+     * @param  string|null $encoding Encoding for the output
+     * @return string Formatted output
+     */
     public function formatOutput($output = null, $encoding = null)
     {
         $return = '';
@@ -96,7 +142,13 @@ class SimpleRouter extends Base
 
         return $return;
     }
-
+    
+    /**
+     * validateMethod
+     *
+     * @param  array|null $methodList List of valid methods
+     * @return bool True if the method is valid
+     */
     public function validateMethod($methodList = null)
     {
         if (!is_array($methodList)) { return true; }
