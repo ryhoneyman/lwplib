@@ -27,13 +27,13 @@ class Options extends Base
     /**
      * Parse options using getopt
      *
-     * @param string $shortOpts Short options string
-     * @param array $longOpts Long options array
+     * @param string|null $shortOpts Short options string
+     * @param string|null $longOpts Long options string, to be split into an array
      * @return void
      */
-    public function parseOptions($shortOpts, $longOpts = [])
+    public function parseOptions($shortOpts = null, $longOpts = null)
     {
-        $this->parsedOptions = getopt($shortOpts,$longOpts);
+        $this->parsedOptions = getopt($shortOpts,explode(',',$longOpts ?: ''));
     }
 
     /**
