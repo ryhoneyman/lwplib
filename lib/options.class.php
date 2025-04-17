@@ -51,6 +51,30 @@ class Options extends Base
     }
 
     /**
+     * Return whether an option is set
+     *
+     * @param string $key Option key
+     * @return bool True if the option is set, false otherwise
+     */
+    public function isOptionSet($key)
+    {
+        return ((isset($this->parsedOptions[$key])) ? true : false);
+    }
+
+    /**
+     * Return ternary values if an option is set
+     *
+     * @param string $key Option key
+     * @param bool $isSet Value to return if the option is set
+     * @param bool $isNotSet Value to return if the option is not set
+     * @return mixed Value based on whether the option is set or not
+     */
+    public function ifOptionSet($key, $isSet = true, $isNotSet = false)
+    {
+        return (($this->isOptionSet($key)) ? $isSet : $isNotSet);
+    }
+
+    /**
      * Get all parsed options
      *
      * @return array Parsed options array
