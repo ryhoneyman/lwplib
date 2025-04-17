@@ -65,8 +65,8 @@ class Options extends Base
      * Return ternary values if an option is set
      *
      * @param string $key Option key
-     * @param bool $isSet Value to return if the option is set
-     * @param bool $isNotSet Value to return if the option is not set
+     * @param mixed $isSet Value to return if the option is set
+     * @param mixed $isNotSet Value to return if the option is not set
      * @return mixed Value based on whether the option is set or not
      */
     public function ifOptionSet($key, $isSet = true, $isNotSet = false)
