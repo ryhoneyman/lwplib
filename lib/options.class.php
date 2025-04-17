@@ -35,7 +35,7 @@ class Options extends Base
     {
         $this->debug(8,"called, short($shortOpts) long($longOpts)");
 
-        $this->parsedOptions = getopt($shortOpts,explode(',',$longOpts ?: ''));
+        $this->parsedOptions = getopt($shortOpts,explode(',',$longOpts ?? ''));
 
         $this->debug(9,"Parsed options: ".json_encode($this->parsedOptions));
     }
