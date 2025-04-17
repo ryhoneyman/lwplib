@@ -33,7 +33,7 @@ class Options extends Base
      */
     public function parseOptions($shortOpts = null, $longOpts = null)
     {
-        $this->debug(8,"called");
+        $this->debug(8,"called, short($shortOpts) long($longOpts)");
 
         $this->parsedOptions = getopt($shortOpts,explode(',',$longOpts ?: ''));
 
