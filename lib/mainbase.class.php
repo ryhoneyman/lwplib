@@ -413,11 +413,15 @@ class MainBase extends Base
     */
    public function loadDefinesFromFile($fileName)
    {
+      $this->debug(8,"called");
+      
       if (!is_file($fileName)) { return false; }
 
       $fileDefines = json_decode(@file_get_contents($fileName),true);
 
       if ($fileDefines && !is_array($fileDefines)) { return false; }
+
+      $this->debug(9,"Loaded ".count($fileDefines)." defines from $fileName");
 
       foreach ($fileDefines as $defineKey => $defineValue) { define($defineKey,$defineValue); }
 
