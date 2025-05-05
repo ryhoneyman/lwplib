@@ -91,10 +91,10 @@ class HttpClient extends Base
       $follow     = (isset($options['follow']) && $options['follow']) ? true : false;
 
       // If proxy was set, obtain address, username, password
-      list($proxyAddr,$proxyUser,$proxyPass) = ($options['proxy']) ?: array(null,null,null);
+      list($proxyAddr,$proxyUser,$proxyPass) = ($options['proxy']) ?? array(null,null,null);
 
       // If authentication is provided, get type, username, password
-      list($authType,$authUser,$authPass) = ($options['auth']) ?: array(null,null,null);
+      list($authType,$authUser,$authPass) = ($options['auth']) ?? array(null,null,null);
 
       $responseHeaders = array();
 
