@@ -91,7 +91,7 @@ class Debug extends Base
       $mesg  = preg_replace('/\s*$/','',$mesg);
       $trace = debug_backtrace();
 
-      if (!$trace[$caller]['line']) { $caller = 0; }
+      if (!isset($trace[$caller]['line'])) { $caller = 0; }
 
       $date  = date("Ymd-H:i:s");
       $func  = $trace[$caller]['function'];

@@ -37,7 +37,7 @@ class Router extends LWPLib\Base
 
       foreach (array('nofilter','filter') as $matchType) {
          foreach ($matchList[$matchType] as $path => $pathInfo) {
-            $matchPath = $this->parsePath($path,$pathInfo['filter']);  // process the path replacing filters with regex patterns
+            $matchPath = $this->parsePath($path,isset($pathInfo['filter']) ? $pathInfo['filter'] : null);  // process the path replacing filters with regex patterns
 
             if ($matchPath === false) { continue; }  // parsing the path failed
 

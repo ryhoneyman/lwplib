@@ -400,7 +400,7 @@ class MainBase extends Base
          if (!defined($info['name'])) { define($info['name'],$info['value']); }
       }
 
-      if (!$this->settings['connect.database']) { $this->disconnectDatabase(); }
+      if ($this->ifSetting('connect.database') && !$this->settings['connect.database']) { $this->disconnectDatabase(); }
 
       return true;
    }
