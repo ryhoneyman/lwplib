@@ -80,15 +80,15 @@ class HttpClient extends Base
    public function send($url, $headers = null, $data = null, $options = null)
    {
       $method     = strtoupper($options['method']) ?: null;
-      $timeout    = $options['timeout'] ?: 15;
-      $agent      = $options['agent'] ?: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)';
-      $referer    = $options['referer'] ?: null;
-      $sslVersion = $options['sslversion'] ?: CURL_SSLVERSION_TLSv1;
-      $sslCipher  = $options['sslcipher'] ?: null;
-      $decode     = $options['decode'] ?: null;
-      $expectCode = $options['expectcode'] ?: null;
-      $verbose    = ($options['verbose']) ? true : false;
-      $follow     = ($options['follow']) ? true : false;
+      $timeout    = $options['timeout'] ?? 15;
+      $agent      = $options['agent'] ?? 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)';
+      $referer    = $options['referer'] ?? null;
+      $sslVersion = $options['sslversion'] ?? CURL_SSLVERSION_TLSv1;
+      $sslCipher  = $options['sslcipher'] ?? null;
+      $decode     = $options['decode'] ?? null;
+      $expectCode = $options['expectcode'] ?? null;
+      $verbose    = (isset($options['verbose']) && $options['verbose']) ? true : false;
+      $follow     = (isset($options['follow']) && $options['follow']) ? true : false;
 
       // If proxy was set, obtain address, username, password
       list($proxyAddr,$proxyUser,$proxyPass) = ($options['proxy']) ?: array(null,null,null);

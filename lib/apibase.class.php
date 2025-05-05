@@ -99,10 +99,10 @@ class APIBase extends Base
    {    
       $this->debug(8,"called");
 
-      $uriParams = $requestParams['params'] ?: array();
-      $data      = $requestParams['data'] ?: array();
-      $headers   = $requestParams['headers'] ?: array();
-      $options   = $requestParams['options'] ?: null;
+      $uriParams = $requestParams['params'] ?? array();
+      $data      = $requestParams['data'] ?? array();
+      $headers   = $requestParams['headers'] ?? array();
+      $options   = $requestParams['options'] ?? null;
 
       // If we match a preset URI shortcut, replace it here
       if ($this->uris[$url]) { $url = $this->buildUrl($url,$uriParams); } 
@@ -116,8 +116,8 @@ class APIBase extends Base
 
       $authMethod = $this->getAuthMethod();
 
-      if (is_array($authMethod['header'])) { $headerTypes['auth'] = $authMethod['header']; }
-      if (is_array($authMethod['data']))   { $data = array_merge($data,$authMethod['data']); }
+      if (isset($authMethod['header']) && is_array($authMethod['header'])) { $headerTypes['auth'] = $authMethod['header']; }
+      if (isset($authMethod['data']) && is_array($authMethod['data']))     { $data = array_merge($data,$authMethod['data']); }
 
       // Get request types
       $requestTypes = array_flip(explode(',',$requestType));
