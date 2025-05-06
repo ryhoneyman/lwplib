@@ -10,6 +10,7 @@ class Request extends Base
    public $apiVersion;    // The first part of the path is which version of the api is being called
    public $path;          // Full path string without the api version
    public $basePath;      // Base path of endpoint
+   public $clientIp;      // Client IP address
    public $protocol;      // HTTP protocol, HTTP/1.x
    public $method;        // HTTP method, GET/POST/PUT/DELETE
    public $parameters;    // Passed information on the GET line or POST body
@@ -49,6 +50,14 @@ class Request extends Base
       $this->getMethod();
       $this->getApiPath();
       $this->getParameters();
+      $this->getClientIp();
+   }
+
+   public function getClientIp()
+   {
+      $this->debug(7,'method called');
+
+      $this->clientIp = $this->serverVars['HTTP_X_FORWARDED_FOR'] ?? $this->serverVars['HTTP_CLIENT_IP'] ?? $this->serverVars['REMOTE_ADDR'] ?? null;
    }
 
    public function getProtocol()
