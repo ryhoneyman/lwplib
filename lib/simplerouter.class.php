@@ -44,8 +44,11 @@ class SimpleRouter extends Base
 
         if (!is_array($routeList)) { $this->sendResponse(null,null,500); }
 
+        $routeMatch = false;
+
         foreach ($routeList as $route => $routeInfo) {
             if ($this->matchRoute($route)) {
+                $routeMatch    = true;
                 $routeCallback = $routeInfo['function'];
                 $routeMethods  = $routeInfo['method'];
 
@@ -55,6 +58,8 @@ class SimpleRouter extends Base
                 call_user_func($routeCallback,$parameters);
             }
         }
+
+        if (!$routeMatch) { $this->sendResponse("No matching route found",null,404); }
     }
     
     /**
