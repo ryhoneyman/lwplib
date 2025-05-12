@@ -160,8 +160,8 @@ class MySQL extends Base
        $stmt = mysqli_prepare($this->resource,$statement);
 
        if ($stmt === false) {
-          $this->lastErrno = 0;
-          $this->lastError = "Could not prepare statement";
+          $this->lastErrno = mysqli_errno($this->resource);
+          $this->lastError = mysqli_error($this->resource);
           $this->debug(1,"malformed statement in prepare ($statement)");
           return false;
        }
@@ -174,8 +174,8 @@ class MySQL extends Base
        $bindResult = call_user_func_array(array($stmt,'bind_param'),array_merge($types,$varRefs));
 
        if ($bindResult === false) {
-          $this->lastErrno = 0;
-          $this->lastError = "Could not bind parameters";
+          $this->lastErrno = mysqli_stmt_errno($stmt);
+          $this->lastError = mysqli_stmt_error($stmt);
           return false; 
        }
 
