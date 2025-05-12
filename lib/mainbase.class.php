@@ -472,13 +472,19 @@ class MainBase extends Base
 
       $dbConnect = json_decode(base64_decode(file_get_contents($dbConfigFile)),true);
 
-      if (!$dbConnect) { return false; }
+      if (!$dbConnect) { 
+         $this->error("Could not load database configuration file: $dbConfigFile");
+         return false; 
+      }
 
       $buildResult = $this->buildClass("db.$name",$className,null,$fileName);
 
       $this->debug(9,"buildResult:".json_encode($buildResult)." for class:$className name:$name");
 
-      if (!$buildResult) { return false; }
+      if (!$buildResult) { 
+         $this->error("Could not build database class: $className");
+         return false; 
+      }
 
       $this->db($name)->prepare($dbConnect['hostname'],$dbConnect['username'],$dbConnect['password'],$dbConnect['database']);
 
@@ -498,6 +504,7 @@ class MainBase extends Base
       if (is_null($name)) { $name = $this->settings['defaults']['db.name']; }
 
       if (!$this->db($name)) { 
+         $this->error("Database $name object does not exist");
          $this->debug(9,"Database $name object does not exist");
          return false; 
       }
@@ -505,6 +512,10 @@ class MainBase extends Base
       $attachResult = $this->db($name)->attach();
 
       $this->debug(9,"attachResult:".json_encode($attachResult)." for name:$name");
+
+      if (!$attachResult) { 
+         $this->error("Could not attach to database $name: ".json_encode($this->db($name)->lastError())); 
+      }
 
       return $attachResult;
    }
