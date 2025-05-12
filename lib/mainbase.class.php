@@ -456,7 +456,7 @@ class MainBase extends Base
     * @param  string|null $fileName Filename of class
     * @return bool Database prepared value
     */
-   public function prepareDatabase($dbConfigFile = null, $name = null, $className = null, $fileName = null)
+   public function prepareDatabase($name = null, $dbConfigFile = null, $className = null, $fileName = null)
    {
       $this->debug(8,"called");
 
@@ -518,11 +518,11 @@ class MainBase extends Base
     * @param  string|null $fileName Filename of class
     * @return bool Database connected value
     */
-   public function connectDatabase($dbConfigFile = null, $name = null, $className = null, $fileName = null)
+   public function connectDatabase($name = null, $dbConfigFile = null, $className = null, $fileName = null)
    {
       $this->debug(8,"called");
 
-      if (!$this->prepareDatabase($dbConfigFile,$name,$className,$fileName)) { return false; }
+      if (!$this->prepareDatabase($name,$dbConfigFile,$className,$fileName)) { return false; }
 
       $connectResult = $this->attachDatabase($name);
 
