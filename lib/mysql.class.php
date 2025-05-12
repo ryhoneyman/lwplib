@@ -160,6 +160,8 @@ class MySQL extends Base
        $stmt = mysqli_prepare($this->resource,$statement);
 
        if ($stmt === false) {
+          $this->lastErrno = 0;
+          $this->lastError = "Could not prepare statement";
           $this->debug(1,"malformed statement in prepare ($statement)");
           return false;
        }
