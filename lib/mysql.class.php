@@ -151,7 +151,7 @@ class MySQL extends Base
           return false;
        }
 
-       if (!$types && !$data) { return $this->query($statement); }
+       if (!$types && !$data) { return $this->query($statement,$options); }
 
        if (!is_array($data)) { $data = array($data); }
 
